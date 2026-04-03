@@ -1,1 +1,12 @@
 plan.docx
+node_modules/
+artifacts/
+cache/
+coverage/
+dist/
+.env
+plan.zip
+plan_extracted/
+labs/lab1/blockchain/node_modules/
+labs/lab1/api/node_modules/
+labs/lab1/blockchain/deployments/*.local.json

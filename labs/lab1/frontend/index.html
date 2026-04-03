@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lab 1 | Blockchain Foundations</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="orb orb-a"></div>
+    <div class="orb orb-b"></div>
+    <main class="layout">
+      <section class="hero panel">
+        <p class="eyebrow">Blockchain Complementary Course</p>
+        <h1>Lab 1 repairs the foundations and makes blockchain visible.</h1>
+        <p class="lead">
+          Start with hashes and chained blocks, then let students touch a live smart contract through a tiny full-stack app.
+        </p>
+        <div class="hero-grid">
+          <div>
+            <span class="metric-label">Teaching mode</span>
+            <strong>Docker-first</strong>
+          </div>
+          <div>
+            <span class="metric-label">Lab spine</span>
+            <strong>Certificate registry path</strong>
+          </div>
+          <div>
+            <span class="metric-label">Today</span>
+            <strong>Hash -> Block -> Contract State</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <h2>Concept repair</h2>
+          <span id="health" class="status pending">Checking chain...</span>
+        </div>
+        <div id="cards" class="cards"></div>
+      </section>
+
+      <section class="panel two-col">
+        <div>
+          <div class="section-head">
+            <h2>Live chain state</h2>
+            <span class="chip">SimpleStorage</span>
+          </div>
+          <div class="state-box">
+            <p class="state-label">Favorite number</p>
+            <p id="favoriteNumber" class="state-value">-</p>
+            <p id="lessonMessage" class="state-text">Deploy the contract to see chain state.</p>
+          </div>
+          <p id="contractAddress" class="mono small"></p>
+          <button id="refreshButton" class="ghost-btn">Refresh from blockchain</button>
+        </div>
+
+        <form id="updateForm" class="form-card">
+          <h3>Write a new state</h3>
+          <label>
+            Number
+            <input id="numberInput" type="number" min="0" value="21" required />
+          </label>
+          <label>
+            Lesson message
+            <textarea id="messageInput" rows="4" required>Students can see the state change on chain.</textarea>
+          </label>
+          <button type="submit">Send transaction</button>
+          <p id="formStatus" class="small"></p>
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <h2>Where the course goes next</h2>
+          <span class="chip accent">Labs 2 to 6</span>
+        </div>
+        <ol id="nextLabs" class="timeline"></ol>
+      </section>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>

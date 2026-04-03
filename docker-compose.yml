@@ -1,0 +1,78 @@
+services:
+  chain:
+    build:
+      context: .
+      dockerfile: infra/docker/dev/Dockerfile
+    container_name: bc-lab1-chain
+    working_dir: /workspace/labs/lab1/blockchain
+    command: sh -c "npm install && npx hardhat node --hostname 0.0.0.0"
+    ports:
+      - "8545:8545"
+    volumes:
+      - .:/workspace
+
+  deployer:
+    build:
+      context: .
+      dockerfile: infra/docker/dev/Dockerfile
+    container_name: bc-lab1-deployer
+    working_dir: /workspace/labs/lab1/blockchain
+    command: sh -c "npm install && npx hardhat compile && npx hardhat run scripts/deploy.js --network localhost"
+    environment:
+      HARDHAT_NETWORK: localhost
+    depends_on:
+      - chain
+    volumes:
+      - .:/workspace
+
+  api:
+    build:
+      context: .
+      dockerfile: infra/docker/api/Dockerfile
+    container_name: bc-lab1-api
+    working_dir: /workspace/labs/lab1/api
+    command: sh -c "npm install && node src/server.js"
+    environment:
+      PORT: 3000
+      RPC_URL: http://chain:8545
+      CHAIN_ID: 31337
+      LAB_ROOT: /workspace/labs/lab1
+      ADMIN_PRIVATE_KEY: 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+    depends_on:
+      - chain
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/workspace
+
+  frontend:
+    build:
+      context: .
+      dockerfile: infra/docker/frontend/Dockerfile
+    container_name: bc-lab1-frontend
+    depends_on:
+      - api
+    ports:
+      - "8080:80"
+    volumes:
+      - ./labs/lab1/frontend:/usr/share/nginx/html:ro
+
+  pythonlab:
+    build:
+      context: .
+      dockerfile: infra/docker/python/Dockerfile
+    container_name: bc-lab1-python
+    working_dir: /workspace/labs/lab1/python
+    command: tail -f /dev/null
+    volumes:
+      - .:/workspace
+
+  dev:
+    build:
+      context: .
+      dockerfile: infra/docker/dev/Dockerfile
+    container_name: bc-lab1-dev
+    working_dir: /workspace
+    command: tail -f /dev/null
+    volumes:
+      - .:/workspace
