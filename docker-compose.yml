@@ -12,18 +12,18 @@ services:
       - .:/workspace
 
   deployer:
-    build:
-      context: .
-      dockerfile: infra/docker/dev/Dockerfile
+    image: blockchaincomplementary-chain
     container_name: bc-lab1-deployer
     working_dir: /workspace/labs/lab1/blockchain
-    command: sh -c "npm install && npx hardhat compile && npx hardhat run scripts/deploy.js --network localhost"
+    command: sh -c "apk add --no-cache gcompat && chmod +x /root/.cache/hardhat-nodejs/compilers-v2/linux-amd64/* && npm install && npx hardhat compile && npx hardhat run scripts/deploy.js --network localhost"
     environment:
       HARDHAT_NETWORK: localhost
+      RPC_URL: http://chain:8545
     depends_on:
       - chain
     volumes:
       - .:/workspace
+      - ./infra/solc-cache:/root/.cache/hardhat-nodejs/compilers-v2
 
   api:
     build:
