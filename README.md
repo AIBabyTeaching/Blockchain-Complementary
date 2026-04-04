@@ -1,13 +1,13 @@
-# Blockchain Complementary Teaching Kit
+# Blockchain Complementary Guide Kit
 
-A Docker-first teaching workspace for the rescued blockchain course led by **Eng. Ahmed Metwalli**.
+A Docker-first Guide workspace for the rescued blockchain course led by **Eng. Ahmed Metwalli**.
 
 ## What is here
 
-- `docs/` teaching material and lab guides.
+- `docs/` Guide material and lab guides.
 - `labs/lab1/` the first working lab, kept simple and visual.
 - `labs/lab2` to `labs/lab6/` reserved for the remaining roadmap.
-- `infra/docker/` Dockerfiles for the teaching stack.
+- `infra/docker/` Dockerfiles for the Guide stack.
 - `docker-compose.yml` one command to run the course environment.
 
 ## Lab sequence
@@ -40,7 +40,7 @@ docker compose run --rm deployer
 docker compose exec pythonlab python /workspace/labs/lab1/python/blockchain_demo.py
 ```
 
-## Teaching intent
+## Guide intent
 
 Lab 1 is deliberately lightweight:
 
