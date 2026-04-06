@@ -7,6 +7,12 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+    <!--
+      This page is the visual viewing layer of Lab 1.
+      It does not speak to the blockchain directly.
+      Instead, app.js calls the API, and the API talks to Hardhat + the contract.
+      The HTML below only defines the structure that JavaScript will fill and animate.
+    -->
     <div class="orb orb-a"></div>
     <div class="orb orb-b"></div>
     <main class="layout">
@@ -14,7 +20,7 @@
         <p class="eyebrow">Blockchain Complementary Course</p>
         <h1>Lab 1 repairs the foundations and makes blockchain visible.</h1>
         <p class="lead">
-          Start with hashes and chained blocks, then let  touch a live smart contract through a tiny full-stack app.
+          Start with hashes and chained blocks, then touch a live smart contract through a tiny full-stack app.
         </p>
         <div class="hero-grid">
           <div>
@@ -33,6 +39,7 @@
       </section>
 
       <section class="panel">
+        <!-- Concept cards are filled dynamically from /api/foundation. -->
         <div class="section-head">
           <h2>Concept repair</h2>
           <span id="health" class="status pending">Checking chain...</span>
@@ -40,7 +47,41 @@
         <div id="cards" class="cards"></div>
       </section>
 
+      <section class="panel">
+        <!--
+          This live visualization area shows the path of a request:
+          Browser -> API -> Chain -> Contract -> Updated State.
+          app.js highlights the nodes and sends animated bubbles across this graph.
+        -->
+        <div class="section-head">
+          <h2>Visualization: Browser to Blockchain</h2>
+          <span class="chip">Live path</span>
+        </div>
+        <div id="flowStage" class="flow-stage">
+          <div class="flow-row">
+            <div id="flowBrowser" class="flow-node active">Browser</div>
+            <div class="flow-arrow">-></div>
+            <div id="flowApi" class="flow-node">API</div>
+            <div class="flow-arrow">-></div>
+            <div id="flowChain" class="flow-node">Hardhat Chain</div>
+            <div class="flow-arrow">-></div>
+            <div id="flowContract" class="flow-node">Smart Contract</div>
+            <div class="flow-arrow">-></div>
+            <div id="flowState" class="flow-node">State Updated</div>
+          </div>
+          <div id="flowBubbles" class="flow-bubbles" aria-hidden="true"></div>
+        </div>
+        <p id="flowHint" class="small flow-hint">Waiting for action...</p>
+        <div class="event-panel">
+          <p class="event-title">Live events</p>
+          <ul id="eventFeed" class="event-feed">
+            <li class="event-item">System ready. Waiting for first action.</li>
+          </ul>
+        </div>
+      </section>
+
       <section class="panel two-col">
+        <!-- Left side: current on-chain state. Right side: form that triggers a transaction. -->
         <div>
           <div class="section-head">
             <h2>Live chain state</h2>
@@ -63,7 +104,7 @@
           </label>
           <label>
             Lesson message
-            <textarea id="messageInput" rows="4" required> can see the state change on chain.</textarea>
+            <textarea id="messageInput" rows="4" required>You can see the state change on chain.</textarea>
           </label>
           <button type="submit">Send transaction</button>
           <p id="formStatus" class="small"></p>
@@ -71,6 +112,7 @@
       </section>
 
       <section class="panel">
+        <!-- This list is also filled from API foundation data. -->
         <div class="section-head">
           <h2>Where the course goes next</h2>
           <span class="chip accent">Labs 2 to 6</span>

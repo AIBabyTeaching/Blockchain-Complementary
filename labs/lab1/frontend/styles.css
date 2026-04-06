@@ -11,6 +11,12 @@
   --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
 }
 
+/*
+  This stylesheet gives the lab frontend its viewing-oriented visual language.
+  The design goal is to make blockchain feel alive:
+  soft glowing background, highlighted nodes, moving bubbles, and readable event cards.
+*/
+
 * {
   box-sizing: border-box;
 }
@@ -63,6 +69,7 @@ body {
   padding: 24px;
   margin-bottom: 20px;
   box-shadow: var(--shadow);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
 }
 
@@ -116,6 +123,139 @@ body {
 
 .cards {
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.flow-stage {
+  position: relative;
+}
+
+.flow-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.flow-bubbles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.flow-node {
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.03);
+  color: #d7e5f8;
+  font-weight: 700;
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.flow-node.active {
+  border-color: rgba(61, 220, 151, 0.85);
+  background: rgba(61, 220, 151, 0.14);
+  color: #e9fff4;
+  transform: translateY(-1px);
+}
+
+.flow-node.pulse {
+  animation: nodePulse 0.6s ease;
+}
+
+.flow-bubble {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 28% 28%, #f8fff6 0%, #3ddc97 56%, #13a56f 100%);
+  box-shadow: 0 0 0 5px rgba(61, 220, 151, 0.14), 0 0 26px rgba(61, 220, 151, 0.5);
+  transform: translate(-50%, -50%);
+  opacity: 1;
+  transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1), left 0.55s cubic-bezier(0.2, 0.8, 0.2, 1), top 0.55s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease;
+}
+
+.flow-bubble.error {
+  background: radial-gradient(circle at 28% 28%, #fff5f5 0%, #ff7b72 60%, #d94d45 100%);
+  box-shadow: 0 0 0 5px rgba(255, 123, 114, 0.14), 0 0 24px rgba(255, 123, 114, 0.48);
+}
+
+.flow-arrow {
+  color: var(--accent-2);
+  font-weight: 900;
+}
+
+.flow-hint {
+  margin: 12px 0 0;
+}
+
+.event-panel {
+  margin-top: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 12px;
+  background: rgba(4, 11, 22, 0.45);
+}
+
+.event-title {
+  margin: 0 0 10px;
+  color: #c6d7ed;
+  font-weight: 700;
+}
+
+.event-feed {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+  max-height: 180px;
+  overflow: auto;
+}
+
+.event-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  padding: 8px 10px;
+  color: #d8e6f7;
+  font-size: 0.92rem;
+}
+
+.event-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--accent-2);
+  box-shadow: 0 0 10px rgba(255, 184, 77, 0.5);
+}
+
+.event-dot.ok {
+  background: var(--accent);
+  box-shadow: 0 0 10px rgba(61, 220, 151, 0.52);
+}
+
+.event-dot.error {
+  background: var(--danger);
+  box-shadow: 0 0 10px rgba(255, 123, 114, 0.52);
+}
+
+.event-time {
+  color: #93acc9;
+  font-size: 0.8rem;
+  font-family: "Consolas", "Courier New", monospace;
+}
+
+@keyframes nodePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(61, 220, 151, 0.45);
+  }
+  100% {
+    box-shadow: 0 0 0 13px rgba(61, 220, 151, 0);
+  }
 }
 
 .two-col {
@@ -239,5 +379,13 @@ textarea {
   .section-head {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .flow-arrow {
+    display: none;
+  }
+
+  .event-feed {
+    max-height: 230px;
   }
 }

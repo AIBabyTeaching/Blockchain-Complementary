@@ -4,6 +4,10 @@ import fs from "node:fs";
 import path from "node:path";
 import { ethers } from "ethers";
 
+// This API is the middle layer between the browser and the blockchain.
+// The browser talks HTTP/JSON, but the blockchain speaks JSON-RPC and contract calls.
+// So this file translates browser actions into blockchain reads and transactions.
+
 const app = express();
 const port = Number(process.env.PORT || 3000);
 const labRoot = process.env.LAB_ROOT || "/workspace/labs/lab1";
@@ -28,17 +32,24 @@ const conceptCards = [
   }
 ];
 
+// readJson() is a tiny utility for reading JSON files from disk.
+// We use it for deployment metadata and contract artifact files.
 function readJson(filePath) {
   if (!fs.existsSync(filePath)) {
     return null;
   }
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
+// End readJson(): returns parsed JSON or null if the file does not exist.
 
+// getDeployment() loads the saved contract addresses for the local network.
 function getDeployment() {
   return readJson(path.join(labRoot, "blockchain", "deployments", "localhost.json"));
 }
+// End getDeployment(): gives the API the current deployed addresses.
 
+// getSimpleStorageArtifact() loads the compiled ABI for SimpleStorage.
+// The ABI tells ethers how to encode function calls and decode returned values.
 function getSimpleStorageArtifact() {
   return readJson(
     path.join(
@@ -51,24 +62,62 @@ function getSimpleStorageArtifact() {
     )
   );
 }
+// End getSimpleStorageArtifact(): returns the compiled contract interface.
 
+// getSimpleStorageContract() builds a usable ethers Contract object.
+// It also protects the lab from common viewing-time failures:
+// missing deployment file, bad address, or address with no contract code on chain.
 async function getSimpleStorageContract(withSigner = false) {
   const deployment = getDeployment();
   const artifact = getSimpleStorageArtifact();
 
-  if (!deployment || !artifact) {
-    return null;
+  if (!deployment || !artifact || !deployment.contracts?.SimpleStorage) {
+    return {
+      ok: false,
+      status: 404,
+      message: "Contract metadata not found. Run the deployer service after the chain starts."
+    };
+  }
+
+  const contractAddress = deployment.contracts.SimpleStorage;
+  if (!ethers.isAddress(contractAddress)) {
+    return {
+      ok: false,
+      status: 500,
+      message: "Deployment file is invalid. Re-run deployer to regenerate addresses."
+    };
   }
 
   const provider = new ethers.JsonRpcProvider(rpcUrl);
+  const code = await provider.getCode(contractAddress);
+  if (!code || code === "0x") {
+    return {
+      ok: false,
+      status: 409,
+      message:
+        "SimpleStorage is not deployed on the current chain state. Run: docker compose run --rm deployer"
+    };
+  }
+
   if (!withSigner) {
-    return new ethers.Contract(deployment.contracts.SimpleStorage, artifact.abi, provider);
+    return {
+      ok: true,
+      contract: new ethers.Contract(contractAddress, artifact.abi, provider),
+      deployment
+    };
   }
 
   const signer = new ethers.Wallet(adminPrivateKey, provider);
-  return new ethers.Contract(deployment.contracts.SimpleStorage, artifact.abi, signer);
+  return {
+    ok: true,
+    contract: new ethers.Contract(contractAddress, artifact.abi, signer),
+    deployment
+  };
 }
+// End getSimpleStorageContract(): returns either a safe error object or a ready-to-use contract.
 
+// Health endpoint: proves the API can reach the local blockchain node.
+// It does not touch the contract yet; it only asks the chain for the latest block number.
 app.get("/api/health", async (_req, res) => {
   try {
     const provider = new ethers.JsonRpcProvider(rpcUrl);
@@ -78,7 +127,9 @@ app.get("/api/health", async (_req, res) => {
     res.status(500).json({ ok: false, message: error.message });
   }
 });
+// End /api/health: browser can use this to show whether the chain is alive.
 
+// Foundation endpoint: serves static viewing content for the concept cards.
 app.get("/api/foundation", (_req, res) => {
   res.json({
     title: "Lab 1: blockchain foundations repaired quickly",
@@ -91,19 +142,22 @@ app.get("/api/foundation", (_req, res) => {
     ]
   });
 });
+// End /api/foundation: provides UI content unrelated to contract state.
 
+// Read endpoint: fetches current on-chain values from SimpleStorage.
+// This is a contract call, not a transaction, because it does not modify state.
 app.get("/api/storage", async (_req, res) => {
   try {
-    const contract = await getSimpleStorageContract(false);
-    if (!contract) {
-      return res.status(404).json({
+    const contractResult = await getSimpleStorageContract(false);
+    if (!contractResult.ok) {
+      return res.status(contractResult.status).json({
         ok: false,
-        message: "Contract not deployed yet. Run the deployer service after the chain starts."
+        message: contractResult.message
       });
     }
 
+    const { contract, deployment } = contractResult;
     const [favoriteNumber, lessonMessage] = await contract.retrieve();
-    const deployment = getDeployment();
 
     res.json({
       ok: true,
@@ -115,7 +169,10 @@ app.get("/api/storage", async (_req, res) => {
     res.status(500).json({ ok: false, message: error.message });
   }
 });
+// End GET /api/storage: returns current favorite number, message, and contract address.
 
+// Write endpoint: updates contract state.
+// This path creates a transaction, waits for mining, then reads the new state back.
 app.post("/api/storage", async (req, res) => {
   const { favoriteNumber, lessonMessage } = req.body;
 
@@ -127,14 +184,15 @@ app.post("/api/storage", async (req, res) => {
   }
 
   try {
-    const contract = await getSimpleStorageContract(true);
-    if (!contract) {
-      return res.status(404).json({
+    const contractResult = await getSimpleStorageContract(true);
+    if (!contractResult.ok) {
+      return res.status(contractResult.status).json({
         ok: false,
-        message: "Contract not deployed yet. Run the deployer service after the chain starts."
+        message: contractResult.message
       });
     }
 
+    const { contract } = contractResult;
     const tx = await contract.store(favoriteNumber, lessonMessage);
     await tx.wait();
     const [storedNumber, storedMessage] = await contract.retrieve();
@@ -149,7 +207,10 @@ app.post("/api/storage", async (req, res) => {
     res.status(500).json({ ok: false, message: error.message });
   }
 });
+// End POST /api/storage: returns tx hash and updated stored values.
 
+// Start the HTTP server so the frontend can call these endpoints.
 app.listen(port, () => {
   console.log(`Lab 1 API listening on port ${port}`);
 });
+// End server startup.
