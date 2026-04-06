@@ -15,9 +15,9 @@ A Docker-first Guide workspace for the rescued blockchain course led by **Eng. A
 1. Lab 1: hashing, blocks, local chain, and a tiny full-stack blockchain app.
 2. Lab 2: Hardhat node and local Ethereum accounts.
 3. Lab 3: `SimpleStorage` deployment and interaction.
-4. Lab 4: certificate or student registry contract.
+4. Lab 4: certificate or Person registry contract.
 5. Lab 5: access control, security, and tests.
-6. Lab 6: mini-project demo and student presentations.
+6. Lab 6: mini-project demo and Person presentations.
 
 ## Quick start
 

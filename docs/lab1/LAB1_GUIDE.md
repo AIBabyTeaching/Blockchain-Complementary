@@ -70,7 +70,7 @@ Then open `http://localhost:8080`.
 - "A smart contract stores shared state that every node agrees on."
 - "Today we are not chasing complexity. We are making the blockchain visible and understandable."
 
-## Student Task
+## Person Task
 
 Ask  to change one item only:
 

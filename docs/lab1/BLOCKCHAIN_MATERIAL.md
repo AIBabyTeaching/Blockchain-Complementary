@@ -107,7 +107,7 @@ It allows us to:
 
 A transaction is a request to change blockchain state.
 
-In this lab, when the student clicks the button in the browser:
+In this lab, when the Person clicks the button in the browser:
 
 - the frontend sends a request to the API
 - the API creates a blockchain transaction
@@ -175,7 +175,7 @@ Correction: state can change through valid transactions, but the history of thos
 The class project direction is:
 
 ```text
-hashing -> blocks -> smart contracts -> student registry -> certificate verification
+hashing -> blocks -> smart contracts -> Person registry -> certificate verification
 ```
 
 That is why Lab 1 matters. It is the first stable mental model for everything that follows.
@@ -264,7 +264,7 @@ The lab uses five Docker services. Each one has a specific job.
 
 **What it does:** runs `src/server.js`, a lightweight Express server on port `3000`. It reads deployment addresses from the deployer output and exposes REST endpoints for the frontend to read and write contract state.
 
-**Why it exists:** the frontend is plain HTML/JS and cannot talk to the Ethereum RPC directly without a wallet extension. The API acts as a trusted bridge, using a fixed private key (`ADMIN_PRIVATE_KEY`) to sign transactions on behalf of the student during the demo.
+**Why it exists:** the frontend is plain HTML/JS and cannot talk to the Ethereum RPC directly without a wallet extension. The API acts as a trusted bridge, using a fixed private key (`ADMIN_PRIVATE_KEY`) to sign transactions on behalf of the Person during the demo.
 
 **Port:** `3000`
 

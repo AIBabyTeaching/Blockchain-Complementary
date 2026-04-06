@@ -33,7 +33,7 @@
 
 - Show `CertificateRegistry.sol`.
 - Say that this is where the course is going next.
-- Tie it to student registry and certificate verification.
+- Tie it to Person registry and certificate verification.
 
 ## Closing
 

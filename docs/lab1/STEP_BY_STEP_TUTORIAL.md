@@ -178,7 +178,7 @@ Open [CertificateRegistry.sol](../../labs/lab1/blockchain/contracts/CertificateR
 Explain:
 
 - today we used a small contract so the workflow stays easy
-- later labs will extend the exact same stack into certificate verification and student registry logic
+- later labs will extend the exact same stack into certificate verification and Person registry logic
 
 ## Troubleshooting
 

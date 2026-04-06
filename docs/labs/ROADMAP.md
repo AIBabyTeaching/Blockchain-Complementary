@@ -6,12 +6,12 @@
 2. Lab 3: compile and deploy `SimpleStorage` in Docker.
 3. Lab 4: build the certificate registry contract.
 4. Lab 5: add access control, security checks, and tests.
-5. Lab 6: student mini-project demos and presentations.
+5. Lab 6: Person mini-project demos and presentations.
 
 Each lab should reuse the same structure:
 
 - concept repair
 - live demo
-- student reproduction
+- Person reproduction
 - one required modification
 - short reflection

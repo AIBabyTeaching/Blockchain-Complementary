@@ -5,8 +5,8 @@ contract CertificateRegistry {
     address public owner;
 
     struct Certificate {
-        string studentId;
-        string studentName;
+        string PersonId;
+        string PersonName;
         string courseName;
         string grade;
         uint256 issuedAt;
@@ -15,7 +15,7 @@ contract CertificateRegistry {
 
     mapping(bytes32 => Certificate) private certificates;
 
-    event CertificateIssued(bytes32 indexed certificateHash, string studentId, string courseName);
+    event CertificateIssued(bytes32 indexed certificateHash, string PersonId, string courseName);
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner can issue certificates");
@@ -28,23 +28,23 @@ contract CertificateRegistry {
 
     function issueCertificate(
         bytes32 certificateHash,
-        string calldata studentId,
-        string calldata studentName,
+        string calldata PersonId,
+        string calldata PersonName,
         string calldata courseName,
         string calldata grade
     ) external onlyOwner {
         require(!certificates[certificateHash].exists, "Certificate already exists");
 
         certificates[certificateHash] = Certificate({
-            studentId: studentId,
-            studentName: studentName,
+            PersonId: PersonId,
+            PersonName: PersonName,
             courseName: courseName,
             grade: grade,
             issuedAt: block.timestamp,
             exists: true
         });
 
-        emit CertificateIssued(certificateHash, studentId, courseName);
+        emit CertificateIssued(certificateHash, PersonId, courseName);
     }
 
     function verifyCertificate(bytes32 certificateHash) external view returns (Certificate memory) {
