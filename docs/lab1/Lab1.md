@@ -55,6 +55,103 @@ Lab 1 has 4 parts:
 
 ---
 
+## First (Super Simple)
+
+Use this script before showing the concept diagram.
+
+### a story
+Imagine you have a notebook where you write important class records.
+If someone secretly changes page 2 at night, how do we know?
+
+Blockchain is like a smart notebook that can reveal that cheating.
+
+### Hash = magic fingerprint
+Every page gets a fingerprint called a hash.
+- same page -> same fingerprint
+- tiny change -> totally different fingerprint
+
+So if someone changes one word, the fingerprint changes immediately.
+
+### Block = one page in the notebook
+A block is one page that has:
+- the data
+- its own fingerprint (hash)
+- the previous page fingerprint
+
+### Why blocks are chained
+Each page says: "I am connected to the previous page fingerprint."
+So pages are linked like a train.
+
+If someone changes page 2:
+- page 2 fingerprint changes
+- page 3 still points to old page 2 fingerprint
+- mismatch appears
+
+That is how tampering becomes visible.
+
+### Smart contract = robot rules on blockchain
+A smart contract is not AI.
+It is just a small robot program with fixed rules.
+
+Example in this lab:
+- store a number
+- store a lesson message
+- return saved values
+
+### Transaction = "please update" message
+A transaction is you asking the smart contract to change something.
+
+In class words:
+- read = "show me current value"
+- transaction = "please save new value"
+
+
+### One-line summary to tell
+"Blockchain is a linked notebook where fingerprints protect trust, and transactions update shared records using clear rules."
+
+---
+
+## Concept Story (Before Architecture)
+
+```mermaid
+flowchart TB
+    D[Data] --> H[Hash\nDigital fingerprint]
+    H --> B[Block\nData + Previous Hash + Current Hash]
+    B --> C[Chain\nBlocks linked together]
+    C --> T[Why chained?\nIf one block changes, next links break]
+
+    SC[Smart Contract\nRules + Shared State on chain] --> TX[Transaction\nRequest to change state]
+    TX --> C
+
+    subgraph Local Docker Lab
+        direction LR
+        U[Browser\nFrontend] --> API[API Service]
+        API --> RPC[Hardhat RPC Node]
+        RPC --> SCS[Smart Contracts]
+    end
+
+    U -. sends action .-> TX
+    C -. stores state .-> SCS
+
+    classDef concept fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20;
+    classDef action fill:#fff3e0,stroke:#ef6c00,stroke-width:2px,color:#bf360c;
+    classDef infra fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1;
+
+    class D,H,B,C,T,SC concept;
+    class TX action;
+    class U,API,RPC,SCS infra;
+```
+
+How to read this diagram:
+- Hash turns data into a fingerprint.
+- A block stores data and links to the previous block hash.
+- Chaining makes tampering visible because links mismatch after changes.
+- Smart contracts define on-chain rules and state.
+- Transactions are the actions that update smart contract state.
+- In Docker, browser -> API -> Hardhat node -> contracts is the execution path.
+
+---
+
 ## 3. Visual Architecture
 
 ```mermaid
@@ -273,7 +370,7 @@ Enter new number + message, submit transaction, then refresh state.
 
 ---
 
-## 9. What To Explain During Teaching (Point-by-Point)
+## 9. Point-by-Point
 
 1. A hash is a data fingerprint.
 2. A block stores data + previous hash link.
