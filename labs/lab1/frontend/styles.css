@@ -1,81 +1,128 @@
 :root {
+  /* CSS custom properties (variables) that define the color scheme and effects used throughout. */
   --bg: #09111f;
+    /* Dark blue background color - very dark for night mode aesthetic. */
   --panel: rgba(9, 20, 37, 0.82);
+    /* Panel background with slight transparency (82% opacity) for glassmorphic effect. */
   --panel-border: rgba(137, 187, 255, 0.16);
+    /* Light blue border, subtle (16% opacity) to suggest containment without harsh lines. */
   --text: #eff7ff;
+    /* Off-white text for high contrast against dark background. Easier on eyes than pure white. */
   --muted: #97aac2;
+    /* Muted gray-blue for secondary text (labels, timestamps, hints). Less emphasis than main text. */
   --accent: #3ddc97;
+    /* Bright green used for success states (event dots, active nodes, error-free bubbles). */
   --accent-2: #ffb84d;
+    /* Orange/gold used for information and neutral states (arrows, info dots). */
   --danger: #ff7b72;
+    /* Red used for error states (failed transactions, error event dots, error bubbles). */
   --chip: #152a49;
+    /* Dark blue-purple for badge/chip backgrounds (status badges, category chips). */
   --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+    /* Large soft shadow for depth perception on panels. 24px blur for softness. */
 }
 
 /*
-  This stylesheet gives the lab frontend its viewing-oriented visual language.
+  This stylesheet gives the lab frontend its teaching-oriented visual language.
   The design goal is to make blockchain feel alive:
   soft glowing background, highlighted nodes, moving bubbles, and readable event cards.
 */
 
 * {
+  /* Universal selector: applies to all elements. */
   box-sizing: border-box;
+    /* Include padding and border in width/height calculations. Standard best practice. */
 }
 
 body {
+  /* Root body styling. */
   margin: 0;
+    /* Remove default browser margin. */
   min-height: 100vh;
+    /* Make body at least full viewport height (prevents footer from floating). */
   font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+    /* System font stack: use Trebuchet or Segoe UI if available, fallback to any sans-serif. */
   color: var(--text);
+    /* Default text color (off-white). */
   background:
+    /* Multi-layer background for depth: two radial gradients + one linear gradient. */
     radial-gradient(circle at top left, rgba(61, 220, 151, 0.18), transparent 26%),
+      /* Green glow in top-left corner (18% opacity, fades by 26% radius). */
     radial-gradient(circle at bottom right, rgba(255, 184, 77, 0.2), transparent 24%),
+      /* Orange glow in bottom-right corner (20% opacity, fades by 24% radius). */
     linear-gradient(135deg, #07101d 0%, #0c1830 42%, #111d36 100%);
+      /* Diagonal gradient from dark navy top-left to slightly lighter blue bottom-right. */
 }
 
 .orb {
+  /* Decorative glowing orbs for atmosphere. */
   position: fixed;
+    /* Fixed positioning so orbs stay in place during scroll. */
   border-radius: 999px;
+    /* Perfect circle (999px > any reasonable size). */
   filter: blur(16px);
+    /* Heavy blur for soft, glowing effect. */
   opacity: 0.45;
+    /* Semi-transparent so orbs don't overpower content. */
   pointer-events: none;
+    /* Orbs don't interact with mouse (they're pure decoration). */
 }
 
 .orb-a {
+  /* First orb: green accent in top-right. */
   width: 220px;
   height: 220px;
   top: 8%;
   right: 10%;
   background: rgba(61, 220, 151, 0.22);
+    /* Green-tinted with low opacity. */
 }
 
 .orb-b {
+  /* Second orb: orange accent in bottom-left. */
   width: 260px;
   height: 260px;
   left: -40px;
+    /* Partially off-screen on the left (creates balance). */
   bottom: 5%;
   background: rgba(255, 184, 77, 0.2);
+    /* Orange-tinted with low opacity. */
 }
 
 .layout {
+  /* Main content container. */
   width: min(1120px, calc(100% - 32px));
+    /* Max width 1120px, but shrink to 100% - 32px on narrow screens (16px margin each side). */
   margin: 0 auto;
+    /* Center horizontally. */
   padding: 32px 0 48px;
+    /* Top and bottom padding for breathing room. */
 }
 
 .panel {
+  /* Reusable container styling for major content sections. */
   background: var(--panel);
+    /* Semi-transparent dark blue background. */
   border: 1px solid var(--panel-border);
+    /* Subtle light blue border for definition. */
   border-radius: 28px;
+    /* Large border radius for modern, soft appearance. */
   padding: 24px;
+    /* Interior spacing. */
   margin-bottom: 20px;
+    /* Space between panels. */
   box-shadow: var(--shadow);
+    /* Depth shadow defined in :root. */
   -webkit-backdrop-filter: blur(12px);
+    /* Webkit prefix for older Safari support. */
   backdrop-filter: blur(12px);
+    /* Glassmorphism effect: blur content behind panel slightly. */
 }
 
 .hero h1,
 .section-head h2,
 .form-card h3 {
+  /* Remove default heading margins for tighter spacing control. */
   margin: 0;
 }
 
@@ -83,30 +130,44 @@ body {
 .metric-label,
 .small,
 .state-label {
+  /* Text used for secondary information. */
   color: var(--muted);
+    /* Use muted gray-blue for de-emphasis. */
 }
 
 .eyebrow {
+  /* Tiny uppercase text above main headings (like "BLOCKCHAIN COURSE"). */
   text-transform: uppercase;
+    /* Force uppercase even if HTML uses lowercase. */
   letter-spacing: 0.18em;
+    /* Wide letter spacing for elegant, spaced-out appearance. */
   font-size: 0.8rem;
+    /* Smaller than normal text. */
 }
 
 .lead {
+  /* Large introductory paragraph below hero heading. */
   font-size: 1.1rem;
+    /* Slightly larger than normal. */
   max-width: 62ch;
+    /* Limit line length to 62 characters for readability. */
   color: #d8e6f6;
+    /* Light blue-white for hierarchy between eyebrow (muted) and heading. */
 }
 
 .hero-grid,
 .cards,
 .two-col {
+  /* Grid containers for flexible layouts. */
   display: grid;
   gap: 16px;
+    /* Consistent spacing between grid items. */
 }
 
 .hero-grid {
+  /* Grid for the three stats in hero section. */
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    /* Auto-fit: create as many columns as fit, each at least 180px wide. */
   margin-top: 20px;
 }
 
@@ -115,277 +176,445 @@ body {
 .state-box,
 .form-card,
 .timeline li {
+  /* Reusable inner-card styling for consistency. */
   background: rgba(255, 255, 255, 0.03);
+    /* Very subtle white overlay (3% opacity). */
   border: 1px solid rgba(255, 255, 255, 0.08);
+    /* Subtle lighter border (8% white). */
   border-radius: 20px;
+    /* Medium rounded corners. */
   padding: 16px;
+    /* Internal spacing. */
 }
 
 .cards {
+  /* Grid for concept cards. */
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    /* Cards: at least 220px wide, auto-fit columns. */
 }
 
 .flow-stage {
+  /* Container for the flow diagram (nodes + bubbles). */
   position: relative;
+    /* Establishes positioning context for absolutely positioned bubbles. */
 }
 
 .flow-row {
+  /* Horizontal layout for flow nodes. */
   display: flex;
   flex-wrap: wrap;
+    /* Nodes wrap to next line on narrow screens. */
   gap: 10px;
+    /* Spacing between nodes. */
   align-items: center;
+    /* Vertically center nodes and arrows. */
 }
 
 .flow-bubbles {
+  /* Container for animated bubbles (overlays nodes). */
   position: absolute;
+    /* Absolute positioning so bubbles are drawn on top of nodes. */
   inset: 0;
+    /* Shorthand for top/right/bottom/left: 0. Stretches to fill parent. */
   pointer-events: none;
+    /* Bubbles don't intercept clicks (they're animation, not interactive). */
 }
 
 .flow-node {
+  /* Nodes in the request path visualization (Browser, API, Chain, Contract, State). */
   padding: 10px 14px;
+    /* Internal spacing inside each node. */
   border-radius: 14px;
+    /* Rounded corners for modern appearance. */
   border: 1px solid rgba(255, 255, 255, 0.16);
+    /* Subtle white border (16% opacity). */
   background: rgba(255, 255, 255, 0.03);
+    /* Very subtle white background (3% opacity) - almost invisible. */
   color: #d7e5f8;
+    /* Light blue text. */
   font-weight: 700;
+    /* Bold text for emphasis. */
   transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+    /* Smooth animation when state changes (0.18s is fast for snappy feel). */
 }
 
 .flow-node.active {
+  /* Node is currently highlighted as part of the active request path. */
   border-color: rgba(61, 220, 151, 0.85);
+    /* Border becomes bright green (85% opacity). */
   background: rgba(61, 220, 151, 0.14);
+    /* Background tints with green (14% opacity). */
   color: #e9fff4;
+    /* Text becomes lighter green-ish white. */
   transform: translateY(-1px);
+    /* Lift the node up 1px for subtle depth/focus effect. */
 }
 
 .flow-node.pulse {
+  /* Node is currently pulsing (has a glowing animation). */
   animation: nodePulse 0.6s ease;
+    /* Play the nodePulse animation (defined later). */
 }
 
 .flow-bubble {
+  /* Animated moving dot that travels between nodes. */
   position: absolute;
+    /* Absolute positioning allows free placement anywhere on the page. */
   width: 14px;
   height: 14px;
   border-radius: 999px;
+    /* Round to perfect circle. */
   background: radial-gradient(circle at 28% 28%, #f8fff6 0%, #3ddc97 56%, #13a56f 100%);
+    /* Radial gradient for 3D sphere effect: highlight at top-left, darker at edges. */
   box-shadow: 0 0 0 5px rgba(61, 220, 151, 0.14), 0 0 26px rgba(61, 220, 151, 0.5);
+    /* Double shadow: thin layered glow (5px) + larger soft glow (26px). */
   transform: translate(-50%, -50%);
+    /* Center the bubble at its x/y coordinates (not top-left). */
   opacity: 1;
+    /* Start fully visible. */
   transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1), left 0.55s cubic-bezier(0.2, 0.8, 0.2, 1), top 0.55s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease;
+    /* Smooth animation for position (0.55s with custom easing for bouncy feel) and opacity (0.3s fade). */
 }
 
 .flow-bubble.error {
+  /* Bubble is red (error state). */
   background: radial-gradient(circle at 28% 28%, #fff5f5 0%, #ff7b72 60%, #d94d45 100%);
+    /* Red sphere effect instead of green. */
   box-shadow: 0 0 0 5px rgba(255, 123, 114, 0.14), 0 0 24px rgba(255, 123, 114, 0.48);
+    /* Red glow instead of green. */
 }
 
 .flow-arrow {
+  /* "-&gt;" arrows between nodes. */
   color: var(--accent-2);
+    /* Orange color. */
   font-weight: 900;
+    /* Extra bold for visibility. */
 }
 
 .flow-hint {
+  /* Helper text below the flow visualization. */
   margin: 12px 0 0;
+    /* Space above the hint text. */
 }
 
 .event-panel {
+  /* Container for the live event feed. */
   margin-top: 14px;
   border: 1px solid rgba(255, 255, 255, 0.1);
+    /* Subtle border. */
   border-radius: 16px;
+    /* Rounded corners. */
   padding: 12px;
+    /* Internal padding. */
   background: rgba(4, 11, 22, 0.45);
+    /* Darker background than panels (for contrast). */
 }
 
 .event-title {
+  /* "Live events" heading in the panel. */
   margin: 0 0 10px;
+    /* Remove default heading margin, add bottom margin. */
   color: #c6d7ed;
+    /* Light blue title. */
   font-weight: 700;
+    /* Bold. */
 }
 
 .event-feed {
+  /* <ul> container for all event items. */
   margin: 0;
+    /* Remove default ul margin. */
   padding: 0;
+    /* Remove default ul padding. */
   list-style: none;
+    /* Remove bullet points. */
   display: grid;
+    /* Use grid layout for consistent spacing. */
   gap: 8px;
+    /* Space between each event. */
   max-height: 180px;
+    /* Limit height so feed doesn't get too long. */
   overflow: auto;
+    /* Add scrollbar if events exceed max-height. */
 }
 
 .event-item {
+  /* Single event entry (timestamp + dot + message). */
   display: flex;
+    /* Flex layout: dot, time, message in a row. */
   align-items: center;
+    /* Vertically center all items (important for dot). */
   gap: 10px;
+    /* Space between dot, time, and message. */
   border: 1px solid rgba(255, 255, 255, 0.08);
+    /* Subtle border. */
   background: rgba(255, 255, 255, 0.03);
+    /* Subtle background. */
   border-radius: 12px;
+    /* Rounded corners. */
   padding: 8px 10px;
+    /* Internal spacing. */
   color: #d8e6f7;
+    /* Light text. */
   font-size: 0.92rem;
+    /* Slightly smaller than normal. */
 }
 
 .event-dot {
+  /* Colored dot indicating event status. */
   width: 8px;
   height: 8px;
   border-radius: 999px;
+    /* Perfect circle. */
   background: var(--accent-2);
+    /* Default: orange (neutral/info status). */
   box-shadow: 0 0 10px rgba(255, 184, 77, 0.5);
+    /* Orange glow. */
 }
 
 .event-dot.ok {
+  /* Event succeeded (no errors). */
   background: var(--accent);
+    /* Green. */
   box-shadow: 0 0 10px rgba(61, 220, 151, 0.52);
+    /* Green glow. */
 }
 
 .event-dot.error {
+  /* Event failed (error occurred). */
   background: var(--danger);
+    /* Red. */
   box-shadow: 0 0 10px rgba(255, 123, 114, 0.52);
+    /* Red glow. */
 }
 
 .event-time {
+  /* Timestamp in event (HH:MM:SS). */
   color: #93acc9;
+    /* Muted blue-gray. */
   font-size: 0.8rem;
+    /* Smaller than event text. */
   font-family: "Consolas", "Courier New", monospace;
+    /* Monospace font for time (traditional clock display). */
 }
 
 @keyframes nodePulse {
+  /* Animation: expands a glowing box-shadow around a node. */
   0% {
+    /* Start state: small shadow around node. */
     box-shadow: 0 0 0 0 rgba(61, 220, 151, 0.45);
   }
   100% {
+    /* End state: large shadow then fades to invisible. */
     box-shadow: 0 0 0 13px rgba(61, 220, 151, 0);
+      /* 13px radius, fully transparent (alpha: 0). */
   }
+  /* Effect: looks like a pulse/ripple expanding from the node. */
 }
 
 .two-col {
+  /* Two-column layout (state display + form). */
   grid-template-columns: 1.1fr 0.9fr;
+    /* Left column (state) is slightly wider (1.1fr) than right (form, 0.9fr). */
 }
 
 .section-head {
+  /* Header area for sections (title + badge). */
   display: flex;
+    /* Flex layout to position title and badge side-by-side. */
   align-items: center;
+    /* Vertically center title and badge. */
   justify-content: space-between;
+    /* Title on left, badge on right. */
   gap: 12px;
+    /* Space between them. */
   margin-bottom: 16px;
+    /* Space below the header. */
 }
 
 .status,
 .chip {
+  /* Status badges and category chips. */
   display: inline-flex;
+    /* Flex layout for content inside badges. */
   align-items: center;
+    /* Vertically center content. */
   gap: 8px;
+    /* Space between items in the badge. */
   border-radius: 999px;
+    /* Pill shape (fully rounded). */
   padding: 8px 12px;
+    /* Internal spacing. */
   font-size: 0.85rem;
+    /* Smaller than normal text. */
   background: var(--chip);
+    /* Dark blue background. */
 }
 
 .status.pending {
+  /* Status: waiting (e.g., "Checking chain..."). */
   color: var(--accent-2);
+    /* Orange. */
 }
 
 .status.ok {
+  /* Status: succeeded. */
   color: var(--accent);
+    /* Green. */
 }
 
 .status.error {
+  /* Status: failed. */
   color: var(--danger);
+    /* Red. */
 }
 
 .chip.accent {
+  /* Category chip with accent color (e.g., "Labs 2 to 6"). */
   color: var(--accent);
+    /* Green text. */
 }
 
 .state-value {
+  /* Large displayed value (e.g., "21" for favorite number). */
   font-size: clamp(2.4rem, 5vw, 4rem);
+    /* Responsive font size: min 2.4rem, prefer 5% of viewport width, max 4rem. */
   margin: 8px 0;
+    /* Vertical spacing. */
   font-weight: 700;
+    /* Bold. */
 }
 
 .state-text {
+  /* Current stored message text. */
   margin: 0;
+    /* Remove default paragraph margin. */
   color: #d9e4f4;
+    /* Light blue text. */
 }
 
 button,
 input,
 textarea {
+  /* Form elements inherit font from parent. */
   font: inherit;
+    /* Use body font instead of default monospace-looking form input font. */
 }
 
 button {
+  /* All buttons. */
   cursor: pointer;
+    /* Show pointer cursor on hover. */
   border: 0;
+    /* Remove default border. */
   border-radius: 14px;
+    /* Rounded corners. */
   padding: 12px 16px;
+    /* Internal spacing. */
   font-weight: 700;
+    /* Bold text. */
   background: linear-gradient(135deg, var(--accent), #2cb8ff);
+    /* Gradient from green to light blue (diagonal, 135deg). */
   color: #06111e;
+    /* Dark text on bright background for contrast. */
 }
 
 .ghost-btn {
+  /* Transparent button ("Refresh from blockchain"). */
   background: transparent;
+    /* No background fill. */
   color: var(--text);
+    /* Regular text color. */
   border: 1px solid rgba(255, 255, 255, 0.12);
+    /* Subtle border outline. */
   margin-top: 14px;
+    /* Space above the button. */
 }
 
 .form-card {
+  /* Form container. */
   display: grid;
+    /* Grid layout for form items. */
   gap: 12px;
+    /* Space between form fields. */
 }
 
 label {
+  /* Form labels. */
   display: grid;
+    /* Stack label text above input. */
   gap: 8px;
+    /* Space between label text and input field. */
 }
 
 input,
 textarea {
+  /* Text input fields. */
   width: 100%;
+    /* Stretch to full width. */
   border-radius: 14px;
+    /* Rounded corners. */
   border: 1px solid rgba(255, 255, 255, 0.12);
+    /* Subtle border. */
   background: rgba(4, 11, 22, 0.7);
+    /* Dark background. */
   color: var(--text);
+    /* Light text. */
   padding: 12px 14px;
+    /* Internal spacing. */
 }
 
 .timeline {
+  /* Ordered list for course progression. */
   display: grid;
+    /* Grid layout (each item on its own line). */
   gap: 12px;
+    /* Space between timeline items. */
   padding-left: 22px;
+    /* Leave space for ol's automatic numbers. */
 }
 
 .mono {
+  /* Monospace font for technical text (e.g., contracts addresses). */
   font-family: "Consolas", "Courier New", monospace;
 }
 
 @media (max-width: 820px) {
+  /* Responsive breakpoint: tablets and narrow screens. */
   .layout {
     width: min(100% - 20px, 1120px);
+      /* Reduce horizontal padding to 10px each side. */
     padding-top: 20px;
+      /* Reduce top padding. */
   }
 
   .panel {
     border-radius: 22px;
+      /* Reduce border radius slightly. */
     padding: 18px;
+      /* Reduce internal padding. */
   }
 
   .two-col {
     grid-template-columns: 1fr;
+      /* Stack columns vertically on narrow screens (state above form). */
   }
 
   .section-head {
     align-items: flex-start;
+      /* Align items to top (title and badge stack if needed). */
     flex-direction: column;
+      /* Stack title and badge vertically. */
   }
 
   .flow-arrow {
     display: none;
+      /* Hide arrows between nodes on narrow screens (too cramped). */
   }
 
   .event-feed {
     max-height: 230px;
+      /* Increase max-height on narrow screens (more vertical space). */
   }
 }

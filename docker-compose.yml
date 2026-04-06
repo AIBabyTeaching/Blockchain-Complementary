@@ -1,4 +1,15 @@
+# This file is the orchestration map for the whole Lab 1 environment.
+# Docker Compose starts each service with a clear teaching role:
+# - `chain` gives us a local blockchain.
+# - `deployer` puts contracts onto that blockchain.
+# - `api` translates browser requests into blockchain calls.
+# - `frontend` shows the lab visually in the browser.
+# - `pythonlab` runs the concept-only hash/block demo.
+# - `dev` is a general helper container for workspace work.
+
 services:
+  # `chain` is the local Ethereum-like blockchain node.
+  # Hardhat runs here and exposes JSON-RPC on port 8545.
   chain:
     build:
       context: .
@@ -11,6 +22,9 @@ services:
     volumes:
       - .:/workspace
 
+  # `deployer` is a one-shot service.
+  # It compiles the contracts, deploys them to the running chain,
+  # and writes the deployed addresses into the deployments folder.
   deployer:
     image: blockchaincomplementary-chain
     container_name: bc-lab1-deployer
@@ -25,6 +39,9 @@ services:
       - .:/workspace
       - ./infra/solc-cache:/root/.cache/hardhat-nodejs/compilers-v2
 
+  # `api` is the bridge between browser and blockchain.
+  # The browser sends normal HTTP requests here.
+  # The API then performs contract reads or blockchain transactions.
   api:
     build:
       context: .
@@ -45,6 +62,9 @@ services:
     volumes:
       - .:/workspace
 
+  # `frontend` serves the static teaching UI with nginx.
+  # Students open this in the browser to read state, send transactions,
+  # and watch the live visualization.
   frontend:
     build:
       context: .
@@ -57,6 +77,8 @@ services:
     volumes:
       - ./labs/lab1/frontend:/usr/share/nginx/html:ro
 
+  # `pythonlab` is the concept demo environment.
+  # It stays running so the Python blockchain explanation script can be executed on demand.
   pythonlab:
     build:
       context: .
@@ -67,6 +89,7 @@ services:
     volumes:
       - .:/workspace
 
+  # `dev` is an extra utility container for manual exploration or future lab work.
   dev:
     build:
       context: .
