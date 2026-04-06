@@ -14,7 +14,7 @@
 
 - Point to `previous_hash` in the Python output.
 - Explain that each block depends on what came before it.
-- State clearly that this is the minimum mental model students need.
+- State clearly that this is the minimum mental model  need.
 
 ## Segment 3: Local Blockchain
 

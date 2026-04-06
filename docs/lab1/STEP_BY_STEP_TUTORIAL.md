@@ -85,7 +85,7 @@ What to look for:
 - when data changes, the hash changes
 - this is how tampering becomes visible
 
-**Guide note:** stop here and ask students why the tampered block produces a different hash. Do not move on until they answer that clearly.
+**Guide note:** stop here and ask  why the tampered block produces a different hash. Do not move on until they answer that clearly.
 
 ## Step 5: Deploy the Smart Contract
 
@@ -158,7 +158,7 @@ What happens next:
 - the local blockchain stores the new state
 - the page shows the new value after the transaction is mined
 
-## Step 10: Show Students the Contract Code
+## Step 10: Show  the Contract Code
 
 Open [SimpleStorage.sol](../../labs/lab1/blockchain/contracts/SimpleStorage.sol).
 
@@ -216,9 +216,9 @@ Run:
 docker compose down
 ```
 
-## What Students Should Learn Today
+## What  Should Learn Today
 
-By the end of this lab, students should be able to say:
+By the end of this lab,  should be able to say:
 
 - a hash changes when the data changes
 - a block points to the previous block through its hash
@@ -226,7 +226,7 @@ By the end of this lab, students should be able to say:
 - a smart contract stores shared state on the blockchain
 - Docker can isolate the full development environment
 
-## Mini Task for Students
+## Mini Task for 
 
 Choose only one:
 

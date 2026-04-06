@@ -1,10 +1,10 @@
 # Lab 1 Guide Guide
 
-**Purpose:** close the conceptual gap quickly, give students something visible, and prepare the class for the certificate verification project that drives the rest of the course.
+**Purpose:** close the conceptual gap quickly, give  something visible, and prepare the class for the certificate verification project that drives the rest of the course.
 
 ## Learning Outcomes
 
-By the end of Lab 1, students should be able to:
+By the end of Lab 1,  should be able to:
 
 - explain why hashing matters
 - explain how blocks are chained together
@@ -16,7 +16,7 @@ By the end of Lab 1, students should be able to:
 
 | Strength | Why it matters |
 |---|---|
-| Simple | Students only need Docker Desktop and VS Code. |
+| Simple |  only need Docker Desktop and VS Code. |
 | Visual | The frontend shows concepts, chain health, and live contract state. |
 | Practical | The Python demo explains blocks while Hardhat runs a local Ethereum node. |
 | Extendable | The project already leaves space for Labs 2 to 6. |
@@ -27,8 +27,8 @@ By the end of Lab 1, students should be able to:
 |---|---|
 | 15 min | Repair the concepts quickly. |
 | 20 min | Run the live demo. |
-| 30 min | Students reproduce the demo. |
-| 15 min | Students modify one thing. |
+| 30 min |  reproduce the demo. |
+| 15 min |  modify one thing. |
 
 ## Guide Story
 
@@ -72,7 +72,7 @@ Then open `http://localhost:8080`.
 
 ## Student Task
 
-Ask students to change one item only:
+Ask  to change one item only:
 
 - change the default number stored on chain
 - change the lesson message
