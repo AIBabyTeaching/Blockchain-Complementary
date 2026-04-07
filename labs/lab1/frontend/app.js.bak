@@ -1,0 +1,704 @@
+const API_BASE = "http://localhost:3000";
+
+const healthEl = document.getElementById("health");
+const cardsEl = document.getElementById("cards");
+const nextLabsEl = document.getElementById("nextLabs");
+const favoriteNumberEl = document.getElementById("favoriteNumber");
+const lessonMessageEl = document.getElementById("lessonMessage");
+const contractAddressEl = document.getElementById("contractAddress");
+const formStatusEl = document.getElementById("formStatus");
+const flowHintEl = document.getElementById("flowHint");
+const flowStageEl = document.getElementById("flowStage");
+const flowBubblesEl = document.getElementById("flowBubbles");
+const eventFeedEl = document.getElementById("eventFeed");
+const refreshButton = document.getElementById("refreshButton");
+const updateForm = document.getElementById("updateForm");
+const numberInput = document.getElementById("numberInput");
+const numberRange = document.getElementById("numberRange");
+const messageInput = document.getElementById("messageInput");
+const previewButton = document.getElementById("previewButton");
+const copyLiveButton = document.getElementById("copyLiveButton");
+const surpriseButton = document.getElementById("surpriseButton");
+const replayButton = document.getElementById("replayButton");
+const watchButton = document.getElementById("watchButton");
+const draftPreviewEl = document.getElementById("draftPreview");
+const draftSummaryEl = document.getElementById("draftSummary");
+const draftDeltaEl = document.getElementById("draftDelta");
+const draftMessageEl = document.getElementById("draftMessage");
+const scenarioDeckEl = document.getElementById("scenarioDeck");
+const storyTrailEl = document.getElementById("storyTrail");
+const moveMeterEl = document.getElementById("moveMeter");
+const moveMeterTitleEl = document.getElementById("moveMeterTitle");
+const moveMeterDetailEl = document.getElementById("moveMeterDetail");
+
+const journeySteps = {
+  draft: document.getElementById("journeyDraft"),
+  flight: document.getElementById("journeyFlight"),
+  mined: document.getElementById("journeyMined"),
+  echo: document.getElementById("journeyEcho")
+};
+
+const flowNodes = {
+  browser: document.getElementById("flowBrowser"),
+  api: document.getElementById("flowApi"),
+  chain: document.getElementById("flowChain"),
+  contract: document.getElementById("flowContract"),
+  state: document.getElementById("flowState")
+};
+
+const storyScenes = [
+  {
+    title: "Lucky Seven Returns",
+    kicker: "Same chain, new pulse",
+    detail: "Slide back to the number that usually opens the room and let the message sound calm again.",
+    favoriteNumber: 7,
+    lessonMessage: "A familiar state returns, but it still becomes a fresh transaction."
+  },
+  {
+    title: "Quiet Genesis",
+    kicker: "Low weight",
+    detail: "Drop the number close to zero and watch how even a soft move still leaves a permanent mark.",
+    favoriteNumber: 1,
+    lessonMessage: "The smallest ripple still reaches the whole chain."
+  },
+  {
+    title: "Certificate Rumor",
+    kicker: "Story twist",
+    detail: "Keep the contract simple, but let the text hint at a world where trust has to be verified.",
+    favoriteNumber: 34,
+    lessonMessage: "A rumor moves faster than trust, so the chain keeps the final version honest."
+  },
+  {
+    title: "Bright Confirmation",
+    kicker: "Clear outcome",
+    detail: "Push the value upward and turn the message into a clean statement of shared agreement.",
+    favoriteNumber: 88,
+    lessonMessage: "Everyone reading this contract sees the same ending to the story."
+  }
+];
+
+const runtime = {
+  liveState: null,
+  lastWrite: null,
+  history: [],
+  watchId: null,
+  watchBusy: false,
+  lastBlockNumber: null
+};
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function nowTime() {
+  const d = new Date();
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mm = String(d.getMinutes()).padStart(2, "0");
+  const ss = String(d.getSeconds()).padStart(2, "0");
+  return `${hh}:${mm}:${ss}`;
+}
+
+function addEvent(message, type = "info") {
+  const item = document.createElement("li");
+  item.className = "event-item";
+
+  const dot = document.createElement("span");
+  dot.className = `event-dot ${type === "ok" ? "ok" : type === "error" ? "error" : ""}`;
+
+  const time = document.createElement("span");
+  time.className = "event-time";
+  time.textContent = nowTime();
+
+  const text = document.createElement("span");
+  text.textContent = message;
+
+  item.append(dot, time, text);
+  eventFeedEl.prepend(item);
+
+  while (eventFeedEl.children.length > 16) {
+    eventFeedEl.removeChild(eventFeedEl.lastChild);
+  }
+}
+
+function pushTrail(title, detail, tone = "info") {
+  runtime.history.unshift({ time: nowTime(), title, detail, tone });
+  runtime.history = runtime.history.slice(0, 6);
+  renderStoryTrail();
+}
+
+function renderStoryTrail() {
+  storyTrailEl.innerHTML = runtime.history
+    .map(
+      (entry) => `
+        <li class="story-item ${entry.tone}">
+          <span class="story-time">${escapeHtml(entry.time)}</span>
+          <div>
+            <strong>${escapeHtml(entry.title)}</strong>
+            <p>${escapeHtml(entry.detail)}</p>
+          </div>
+        </li>
+      `
+    )
+    .join("");
+}
+
+function flashNode(key) {
+  const node = flowNodes[key];
+  if (!node) {
+    return;
+  }
+  node.classList.remove("pulse");
+  void node.offsetWidth;
+  node.classList.add("pulse");
+}
+
+function getNodeCenter(node) {
+  const stageRect = flowStageEl.getBoundingClientRect();
+  const nodeRect = node.getBoundingClientRect();
+  return {
+    x: nodeRect.left - stageRect.left + nodeRect.width / 2,
+    y: nodeRect.top - stageRect.top + nodeRect.height / 2
+  };
+}
+
+function animateBubble(fromKey, toKey, variant = "ok") {
+  const fromNode = flowNodes[fromKey];
+  const toNode = flowNodes[toKey];
+  if (!fromNode || !toNode) {
+    return;
+  }
+
+  const start = getNodeCenter(fromNode);
+  const end = getNodeCenter(toNode);
+  const bubble = document.createElement("span");
+  bubble.className = `flow-bubble ${variant === "error" ? "error" : ""}`;
+  bubble.style.left = `${start.x}px`;
+  bubble.style.top = `${start.y}px`;
+  flowBubblesEl.appendChild(bubble);
+
+  requestAnimationFrame(() => {
+    bubble.style.left = `${end.x}px`;
+    bubble.style.top = `${end.y}px`;
+  });
+
+  setTimeout(() => {
+    bubble.style.opacity = "0";
+    setTimeout(() => bubble.remove(), 260);
+  }, 600);
+}
+
+async function tracePath(path, options = {}) {
+  const variant = options.variant || "ok";
+  for (let i = 0; i < path.length; i += 1) {
+    setFlow(path.slice(0, i + 1), options.hint || flowHintEl.textContent);
+    flashNode(path[i]);
+    if (i > 0) {
+      animateBubble(path[i - 1], path[i], variant);
+    }
+    await wait(170);
+  }
+}
+
+function setFlow(activeNodes, hint) {
+  Object.values(flowNodes).forEach((node) => node.classList.remove("active"));
+  activeNodes.forEach((key) => flowNodes[key]?.classList.add("active"));
+  flowHintEl.textContent = hint;
+}
+
+async function getJson(url, options) {
+  const response = await fetch(url, options);
+  let data = {};
+  try {
+    data = await response.json();
+  } catch (_error) {
+    data = {};
+  }
+
+  if (!response.ok) {
+    throw new Error(data?.message || `Request failed with status ${response.status}`);
+  }
+
+  return data;
+}
+
+function renderCards(cards) {
+  cardsEl.innerHTML = cards
+    .map(
+      (card) => `
+        <article class="card">
+          <h3>${escapeHtml(card.title)}</h3>
+          <p>${escapeHtml(card.detail)}</p>
+        </article>
+      `
+    )
+    .join("");
+}
+
+function renderTimeline(items) {
+  nextLabsEl.innerHTML = items.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+}
+
+function renderScenes() {
+  scenarioDeckEl.innerHTML = storyScenes
+    .map(
+      (scene, index) => `
+        <button class="scenario-card" type="button" data-scene-index="${index}">
+          <span class="scenario-kicker">${escapeHtml(scene.kicker)}</span>
+          <strong>${escapeHtml(scene.title)}</strong>
+          <p>${escapeHtml(scene.detail)}</p>
+        </button>
+      `
+    )
+    .join("");
+}
+
+function setJourney(stage = null) {
+  const order = ["draft", "flight", "mined", "echo"];
+  const stageIndex = order.indexOf(stage);
+
+  Object.entries(journeySteps).forEach(([key, node]) => {
+    const index = order.indexOf(key);
+    node.classList.remove("done", "current");
+    if (stageIndex >= 0 && index < stageIndex) {
+      node.classList.add("done");
+    }
+    if (index === stageIndex) {
+      node.classList.add("current");
+    }
+  });
+}
+
+function statesMatch(left, right) {
+  if (!left || !right) {
+    return false;
+  }
+  return left.favoriteNumber === right.favoriteNumber && left.lessonMessage === right.lessonMessage;
+}
+
+function getDraftState() {
+  return {
+    favoriteNumber: Number(numberInput.value),
+    lessonMessage: messageInput.value.trim()
+  };
+}
+
+function setMoveMeter(title, detail, tone = "info") {
+  moveMeterTitleEl.textContent = title;
+  moveMeterDetailEl.textContent = detail;
+  moveMeterEl.className = `story-box move-meter ${tone}`;
+}
+
+function describeDraft() {
+  const draft = getDraftState();
+  if (!Number.isFinite(draft.favoriteNumber) || messageInput.value.trim() === "") {
+    return {
+      title: "The draft is missing a piece.",
+      detail: "The number and the message both need a clear shape before the move can travel.",
+      tone: "error"
+    };
+  }
+
+  if (!runtime.liveState) {
+    return {
+      title: `A first state is waiting at ${draft.favoriteNumber}.`,
+      detail: "Nothing on the page can prove it yet. The block still has to accept the move.",
+      tone: "info"
+    };
+  }
+
+  if (statesMatch(runtime.liveState, draft)) {
+    return {
+      title: "This draft already matches the chain.",
+      detail: "Sending it again would still create a transaction, but the ending would look the same.",
+      tone: "soft"
+    };
+  }
+
+  const numberShift = Math.abs(runtime.liveState.favoriteNumber - draft.favoriteNumber);
+  const numberChanged = runtime.liveState.favoriteNumber !== draft.favoriteNumber;
+  const messageChanged = runtime.liveState.lessonMessage !== draft.lessonMessage;
+
+  if (numberChanged && messageChanged) {
+    return {
+      title: `A full rewrite is gathering: ${runtime.liveState.favoriteNumber} to ${draft.favoriteNumber}.`,
+      detail: numberShift > 20
+        ? "The number jumps hard while the message turns too. This will feel like a loud scene change."
+        : "Both the number and the words bend together. The contract will tell a new version of the story.",
+      tone: "ok"
+    };
+  }
+
+  if (numberChanged) {
+    return {
+      title: `The number wants to move from ${runtime.liveState.favoriteNumber} to ${draft.favoriteNumber}.`,
+      detail: numberShift > 20
+        ? "That is a big leap. Even before it lands, the future looks noticeably different."
+        : "A small numeric drift can still change the mood of the contract.",
+      tone: "info"
+    };
+  }
+
+  return {
+    title: "Only the words are changing.",
+    detail: "The value stands still, but the message will make the same chain feel different when it returns.",
+    tone: "info"
+  };
+}
+
+function updateDraftPreview() {
+  const draft = getDraftState();
+  const story = describeDraft();
+  draftSummaryEl.textContent = story.title;
+  draftDeltaEl.textContent = story.detail;
+  draftMessageEl.textContent = Number.isFinite(draft.favoriteNumber)
+    ? `Draft -> ${draft.favoriteNumber} | ${draft.lessonMessage || "(no message yet)"}`
+    : "Draft -> waiting for a number";
+  draftPreviewEl.className = `draft-preview ${story.tone}`;
+  setMoveMeter(story.title, story.detail, story.tone);
+}
+
+function syncNumberControls(value) {
+  numberInput.value = String(value);
+  numberRange.value = String(value);
+}
+
+function fillDraft(state, note) {
+  syncNumberControls(state.favoriteNumber);
+  messageInput.value = state.lessonMessage;
+  setJourney("draft");
+  updateDraftPreview();
+  formStatusEl.textContent = note;
+}
+
+function buildRandomScene() {
+  const openings = [
+    "The chain catches a bright rumor and pins it down.",
+    "A restless number drifts into focus.",
+    "The block closes over a sharper version of the truth.",
+    "A calm message returns with a different weight."
+  ];
+  return {
+    favoriteNumber: Math.floor(Math.random() * 100),
+    lessonMessage: openings[Math.floor(Math.random() * openings.length)]
+  };
+}
+
+function applyLiveState(data, options = {}) {
+  const previous = runtime.liveState;
+  const next = {
+    favoriteNumber: Number(data.favoriteNumber),
+    lessonMessage: data.lessonMessage,
+    contractAddress: data.contractAddress
+  };
+
+  runtime.liveState = next;
+  favoriteNumberEl.textContent = next.favoriteNumber;
+  lessonMessageEl.textContent = next.lessonMessage;
+  contractAddressEl.textContent = `Contract address: ${next.contractAddress}`;
+  updateDraftPreview();
+
+  const changed = !previous || !statesMatch(previous, next);
+  if (changed && options.trail !== false) {
+    const title = options.title || (!previous ? "The chain speaks for the first time." : "A new state settles into place.");
+    const detail = !previous
+      ? `The contract wakes up holding ${next.favoriteNumber} and a line of text that everyone can read.`
+      : `The visible state now holds ${next.favoriteNumber}, and the page is echoing the fresh version back.`;
+    pushTrail(title, detail, options.tone || "ok");
+  }
+
+  return { previous, next, changed };
+}
+
+async function loadFoundation() {
+  try {
+    const data = await getJson(`${API_BASE}/api/foundation`);
+    renderCards(data.cards);
+    renderTimeline(data.nextLabs);
+    addEvent("The room opened with the core ideas in place.", "ok");
+  } catch (error) {
+    addEvent(`The opening cards slipped away: ${error.message}`, "error");
+  }
+}
+
+async function loadHealth({ quiet = false } = {}) {
+  try {
+    if (!quiet) {
+      await tracePath(["browser", "api", "chain"], {
+        hint: "The page is checking whether the chain is breathing...",
+        variant: "ok"
+      });
+    }
+
+    const data = await getJson(`${API_BASE}/api/health`);
+    healthEl.textContent = `Chain online | block ${data.blockNumber}`;
+    healthEl.className = "status ok";
+    setFlow(["browser", "api", "chain"], "The chain is awake and listening.");
+
+    if (!quiet) {
+      addEvent(`The chain answered from block ${data.blockNumber}.`, "ok");
+    } else if (runtime.lastBlockNumber !== null && runtime.lastBlockNumber !== data.blockNumber) {
+      addEvent(`Watch mode saw the chain step from block ${runtime.lastBlockNumber} to ${data.blockNumber}.`, "info");
+    }
+
+    runtime.lastBlockNumber = data.blockNumber;
+  } catch (error) {
+    healthEl.textContent = "Chain unavailable";
+    healthEl.className = "status error";
+    setFlow(["browser"], "The room lost the chain for a moment.");
+    if (!quiet) {
+      addEvent(`The chain fell out of reach: ${error.message}`, "error");
+    }
+  }
+}
+
+async function loadStorage({ quiet = false, title } = {}) {
+  try {
+    if (!quiet) {
+      await tracePath(["browser", "api", "chain", "contract", "state"], {
+        hint: "The page is following the current state all the way down the stack...",
+        variant: "ok"
+      });
+    }
+
+    const data = await getJson(`${API_BASE}/api/storage`);
+    const result = applyLiveState(data, { title, trail: true, tone: "ok" });
+    setFlow(["browser", "api", "chain", "contract", "state"], "The live state is back on the page.");
+
+    if (!quiet) {
+      addEvent(`The chain returned favoriteNumber=${data.favoriteNumber}.`, "ok");
+    } else if (result.changed) {
+      addEvent(`Watch mode caught a fresh state: favoriteNumber=${data.favoriteNumber}.`, "ok");
+    }
+
+    return result.next;
+  } catch (error) {
+    favoriteNumberEl.textContent = "-";
+    lessonMessageEl.textContent = error.message;
+    contractAddressEl.textContent = "";
+
+    if (!quiet) {
+      await tracePath(["browser", "api", "chain"], {
+        hint: "The path broke before the contract could answer.",
+        variant: "error"
+      });
+      setFlow(["browser", "api", "chain"], "The contract stayed out of reach this round.");
+      addEvent(`The read came back empty: ${error.message}`, "error");
+    }
+    throw error;
+  }
+}
+
+async function submitState(payload, source = "form") {
+  if (!Number.isInteger(payload.favoriteNumber) || payload.lessonMessage === "") {
+    formStatusEl.textContent = "The move needs both a whole number and a clear line of text.";
+    setJourney("draft");
+    return;
+  }
+
+  formStatusEl.textContent = "The move just left the browser.";
+  setJourney("flight");
+  addEvent(
+    source === "replay"
+      ? "A familiar move is taking the path again."
+      : "A new move just stepped onto the wire.",
+    "info"
+  );
+
+  await tracePath(["browser", "api"], {
+    hint: "A draft is becoming a signed move...",
+    variant: "ok"
+  });
+
+  try {
+    const data = await getJson(`${API_BASE}/api/storage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    runtime.lastWrite = { ...payload };
+    formStatusEl.textContent = `The block accepted it. Tx ${data.txHash.slice(0, 12)}...`;
+    setJourney("mined");
+
+    await tracePath(["api", "chain", "contract", "state"], {
+      hint: "The transaction landed, and the contract is answering back...",
+      variant: "ok"
+    });
+
+    addEvent(`A block sealed the move: ${data.txHash.slice(0, 12)}...`, "ok");
+    pushTrail(
+      "A draft crossed the line into chain history.",
+      `Tx ${data.txHash.slice(0, 12)}... carried ${payload.favoriteNumber} into the contract.`,
+      "ok"
+    );
+
+    await loadStorage({ quiet: true, title: "The chain answered with the updated ending." });
+    setJourney("echo");
+  } catch (error) {
+    formStatusEl.textContent = `The move broke before it could settle: ${error.message}`;
+    await tracePath(["api", "chain"], {
+      hint: "The move hit resistance before the contract changed.",
+      variant: "error"
+    });
+    setFlow(["browser", "api", "chain"], "The move stalled before the state could turn.");
+    addEvent(`The move failed: ${error.message}`, "error");
+    pushTrail("A draft lost its footing.", error.message, "error");
+    setJourney("draft");
+  }
+}
+
+async function previewPath() {
+  setJourney("draft");
+  updateDraftPreview();
+  await tracePath(["browser", "api", "chain", "contract", "state"], {
+    hint: "This is only a possible future. Nothing is signed yet.",
+    variant: "ok"
+  });
+  setFlow(["browser"], "The route is visible now, but the chain has not changed.");
+  addEvent("A possible path glowed across the stack without touching the chain.", "info");
+}
+
+function toggleWatch() {
+  if (runtime.watchId) {
+    clearInterval(runtime.watchId);
+    if (runtime.watchCountdownId) {
+      clearInterval(runtime.watchCountdownId);
+      runtime.watchCountdownId = null;
+    }
+    runtime.watchId = null;
+    watchButton.textContent = "Watch the chain";
+    watchButton.classList.remove("watching");
+    addEvent("Watch mode fell quiet.", "info");
+    return;
+  }
+
+  watchButton.classList.add("watching");
+  addEvent("Watch mode is now listening for the next shift.", "ok");
+
+  let countdownSeconds = 5;
+  const updateCountdown = () => {
+    if (countdownSeconds > 0) {
+      watchButton.textContent = `Checking in ${countdownSeconds}s...`;
+      countdownSeconds--;
+    }
+  };
+
+  const checkChain = async () => {
+    countdownSeconds = 5;
+    watchButton.textContent = "Checking chain now...";
+    
+    if (runtime.watchBusy) {
+      return;
+    }
+
+    runtime.watchBusy = true;
+    try {
+      await loadHealth({ quiet: true });
+      await loadStorage({ quiet: true, title: "Watch mode caught the state as it changed." });
+    } catch (_error) {
+      // Ignore repeated watch errors; visible status already updates.
+    } finally {
+      runtime.watchBusy = false;
+      countdownSeconds = 5;
+      updateCountdown();
+    }
+  };
+
+  // Check immediately on first enable
+  checkChain();
+
+  // Then set up countdown + periodic checks
+  const countdownInterval = setInterval(updateCountdown, 1000);
+  runtime.watchId = setInterval(checkChain, 4500);
+
+  // Store both intervals so we can clear them
+  runtime.watchCountdownId = countdownInterval;
+}
+
+refreshButton.addEventListener("click", async () => {
+  formStatusEl.textContent = "The page asked the chain for the latest version.";
+  await loadStorage();
+});
+
+numberInput.addEventListener("input", () => {
+  syncNumberControls(Number(numberInput.value || 0));
+  updateDraftPreview();
+});
+
+numberRange.addEventListener("input", () => {
+  syncNumberControls(Number(numberRange.value));
+  updateDraftPreview();
+});
+
+messageInput.addEventListener("input", () => {
+  updateDraftPreview();
+});
+
+previewButton.addEventListener("click", previewPath);
+
+copyLiveButton.addEventListener("click", () => {
+  if (!runtime.liveState) {
+    formStatusEl.textContent = "There is no live state to echo yet.";
+    return;
+  }
+  fillDraft(runtime.liveState, "The live state has been folded back into the draft.");
+  addEvent("The draft echoed the live state exactly.", "info");
+});
+
+surpriseButton.addEventListener("click", () => {
+  const scene = buildRandomScene();
+  fillDraft(scene, "A surprise move just appeared in the draft.");
+  addEvent(`A surprise scene arrived with number ${scene.favoriteNumber}.`, "info");
+});
+
+replayButton.addEventListener("click", async () => {
+  if (!runtime.lastWrite) {
+    formStatusEl.textContent = "No previous move is waiting in memory yet.";
+    return;
+  }
+  fillDraft(runtime.lastWrite, "The last move is back on the table.");
+  await submitState(runtime.lastWrite, "replay");
+});
+
+watchButton.addEventListener("click", toggleWatch);
+
+scenarioDeckEl.addEventListener("click", (event) => {
+  const card = event.target.closest("[data-scene-index]");
+  if (!card) {
+    return;
+  }
+
+  const scene = storyScenes[Number(card.dataset.sceneIndex)];
+  fillDraft(scene, `${scene.title} is now waiting in the draft.`);
+  pushTrail(scene.title, scene.detail, "info");
+  addEvent(`${scene.title} moved into the draft.`, "info");
+});
+
+updateForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  await submitState(getDraftState(), "form");
+});
+
+async function bootstrap() {
+  renderScenes();
+  renderStoryTrail();
+  updateDraftPreview();
+  await loadFoundation();
+  await loadHealth();
+  try {
+    await loadStorage({ title: "The contract opened its current page." });
+  } catch (_error) {
+    // The error state is already rendered on the page.
+  }
+}
+
+bootstrap();

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+  <!-- ^ Declares this is an HTML5 document (needed for modern browser features). -->
+<html lang="en">
+  <!-- ^ Root <html> element. lang="en" tells accessibility tools the page is in English. -->
+  <head>
+    <!-- ^ <head> contains metadata and links to external resources. -->
+    <meta charset="UTF-8" />
+      <!-- ^ Specifies UTF-8 character encoding (supports all world languages). -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <!-- ^ Mobile-friendly settings: use device width and don't zoom on load. -->
+    <title>Lab 1 | Blockchain Foundations</title>
+      <!-- ^ Page title shown in browser tab and search results. -->
+    <link rel="stylesheet" href="styles.css" />
+      <!-- ^ Link to the external CSS file that styles this page. -->
+  </head>
+  <body>
+    <!-- ^ <body> contains the visible content of the page. -->
+    <!--
+      This page is the visual display layer of Lab 1.
+      It does not speak to the blockchain directly.
+      Instead, app.js calls the API, and the API talks to Hardhat + the contract.
+      The HTML below only defines the structure that JavaScript will fill and animate.
+    -->
+    <div class="orb orb-a"></div>
+      <!-- ^ Decorative glowing orb (positioned via CSS). Makes the page feel alive. -->
+    <div class="orb orb-b"></div>
+      <!-- ^ Second decorative glowing orb. Provides visual balance. -->
+    <main class="layout">
+      <!-- ^ <main> wraps the page content. "layout" class sets max-width and padding. -->
+      <section class="hero panel">
+        <!-- ^ First section: hero panel with the course introduction. -->
+        <p class="eyebrow">Blockchain Complementary Course</p>
+          <!-- ^ Small uppercase text above the main heading (visual hierarchy). -->
+        <h1>Lab 1 repairs the foundations and makes blockchain visible.</h1>
+          <!-- ^ Main heading: the core message of Lab 1. -->
+        <p class="lead">
+          <!-- ^ Introductory paragraph (larger text). -->
+          Start with hashes and chained blocks, then touch a live smart contract through a tiny full-stack app.
+        </p>
+        <div class="hero-grid">
+          <!-- ^ Grid layout showing three key facts about the lab. -->
+          <div>
+            <!-- ^ First stat: Guide mode = Docker-first. -->
+            <span class="metric-label">Guide mode</span>
+              <!-- ^ Label for this stat (small, muted color). -->
+            <strong>Docker-first</strong>
+              <!-- ^ The stat value (larger, bold). -->
+          </div>
+          <div>
+            <!-- ^ Second stat: Lab spine = Certificate registry path. -->
+            <span class="metric-label">Lab spine</span>
+            <strong>Certificate registry path</strong>
+          </div>
+          <div>
+            <!-- ^ Third stat: Today's focus = Hash -> Block -> Contract State. -->
+            <span class="metric-label">Today</span>
+            <strong>Hash -> Block -> Contract State</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel explain-panel">
+        <div class="section-head">
+          <h2>What You're About to Touch</h2>
+          <span class="chip">SimpleStorage</span>
+        </div>
+        <div class="explain-box">
+          <p><strong>A smart contract is a program on the blockchain.</strong> It's not a legal agreement between two people—it's code that everyone on the chain can run.</p>
+          <p>Right now, you're looking at <strong>SimpleStorage</strong>, a tiny contract that holds two pieces of shared state:</p>
+          <ul class="explain-bullets">
+            <li><strong>favoriteNumber</strong> — a number (today it's 21)</li>
+            <li><strong>lessonMessage</strong> — a text message everyone can read</li>
+          </ul>
+          <p><strong>You can:</strong></p>
+          <ul class="explain-bullets">
+            <li><strong>Read the state</strong> — Your browser fetches it from the chain right now (that's what you see on the left: "Favorite number: 21")</li>
+            <li><strong>Change the state</strong> — When you fill in the form and hit "Send to chain," your browser sends a transaction. The network executes it, and everyone reading this contract sees the same new value.</li>
+          </ul>
+          <p><strong>The "contract" is between <em>you and the network</em>, not between two people.</strong> When you change the number to 42, the whole chain agrees that the new number is 42. There's no middleman, no hidden copy—everyone sees the same truth.</p>
+          <hr class="explain-divider">
+          <p><strong>What "Watch the chain" means:</strong> The page can poll the chain every few seconds to catch changes. If <em>someone else</em> submits a transaction first, or if your transaction lands while you're not looking, you'll see the update immediately instead of staring at a frozen page.</p>
+        </div>
+      </section>
+
+      <section class="panel">
+        <!-- ^ Second section: education concept cards. -->
+        <!-- Concept cards are filled dynamically from /api/foundation. -->
+        <div class="section-head">
+          <!-- ^ Section heading area with title and status badge. -->
+          <h2>Concept repair</h2>
+            <!-- ^ Section title. -->
+          <span id="health" class="status pending">Checking chain...</span>
+            <!-- ^ Health status badge (JavaScript updates this with chain status). -->
+        </div>
+        <div id="cards" class="cards"></div>
+          <!-- ^ Container for concept cards (JavaScript populates this with HTML). -->
+      </section>
+
+      <section class="panel">
+        <!-- ^ Third section: live visualization of the request path. -->
+        <!--
+          This live visualization area shows the path of a request:
+          Browser -> API -> Chain -> Contract -> Updated State.
+          app.js highlights the nodes and sends animated bubbles across this graph.
+        -->
+        <div class="section-head">
+          <h2>Visualization: Browser to Blockchain</h2>
+            <!-- ^ Explains what the graph shows. -->
+          <span class="chip">Live path</span>
+            <!-- ^ Small badge indicating this is a live, interactive visualization. -->
+        </div>
+        <div id="flowStage" class="flow-stage">
+          <!-- ^ Main container for the flow diagram (holds nodes and bubbles). -->
+          <div class="flow-row">
+            <!-- ^ Horizontal row of flow nodes showing the request path. -->
+            <div id="flowBrowser" class="flow-node active">Browser</div>
+              <!-- ^ First node: the user's browser. Starts "active" (highlighted). -->
+            <div class="flow-arrow">-></div>
+              <!-- ^ Arrow separator between nodes (visual connector). -->
+            <div id="flowApi" class="flow-node">API</div>
+              <!-- ^ Second node: the backend API server. -->
+            <div class="flow-arrow">-></div>
+            <div id="flowChain" class="flow-node">Hardhat Chain</div>
+              <!-- ^ Third node: the local Ethereum blockchain (Hardhat). -->
+            <div class="flow-arrow">-></div>
+            <div id="flowContract" class="flow-node">Smart Contract</div>
+              <!-- ^ Fourth node: the on-chain smart contract (SimpleStorage). -->
+            <div class="flow-arrow">-></div>
+            <div id="flowState" class="flow-node">State Updated</div>
+              <!-- ^ Fifth node: the end state after a successful transaction. -->
+          </div>
+          <div id="flowBubbles" class="flow-bubbles" aria-hidden="true"></div>
+            <!-- ^ Container for animated bubbles (aria-hidden because they're decorative, not content). -->
+        </div>
+        <p id="flowHint" class="small flow-hint">Waiting for action...</p>
+          <!-- ^ Helper text below the graph explaining current state (JavaScript updates this). -->
+        <div class="event-panel">
+          <!-- ^ Section for the live event feed. -->
+          <p class="event-title">Live events</p>
+            <!-- ^ Title for the event log. -->
+          <ul id="eventFeed" class="event-feed">
+            <!-- ^ List of events (JavaScript prepends new events to this). -->
+            <li class="event-item">System ready. Waiting for first action.</li>
+              <!-- ^ Initial placeholder message shown on page load. -->
+          </ul>
+        </div>
+      </section>
+
+      <section class="panel two-col">
+        <!-- ^ Fourth section: two-column layout with state display and form. -->
+        <!-- Left side: current on-chain state. Right side: form that triggers a transaction. -->
+        <div>
+          <!-- ^ Left column: current on-chain state display. -->
+          <div class="section-head">
+            <h2>Live chain state</h2>
+              <!-- ^ Heading for the state display area. -->
+            <span class="chip">SimpleStorage</span>
+              <!-- ^ Badge showing which contract we're displaying state from. -->
+          </div>
+          <div class="state-box">
+            <!-- ^ Box containing the current state values. -->
+            <p class="state-label">Favorite number</p>
+              <!-- ^ Label for the first state variable. -->
+            <p id="favoriteNumber" class="state-value">-</p>
+              <!-- ^ Display area for the current favorite number (JavaScript updates this). -->
+            <p id="lessonMessage" class="state-text">Deploy the contract to see chain state.</p>
+              <!-- ^ Display area for the lesson message (JavaScript updates this). -->
+          </div>
+          <p id="contractAddress" class="mono small"></p>
+            <!-- ^ Container for the contract address (JavaScript updates this). -->
+          <button id="refreshButton" class="ghost-btn">Refresh from blockchain</button>
+            <!-- ^ Button to manually re-read the contract state. Triggers loadStorage(). -->
+        </div>
+
+        <form id="updateForm" class="form-card">
+          <!-- ^ Right column: form for writing new state to the contract. -->
+          <h3>Shape the next ripple</h3>
+            <!-- ^ Form heading. -->
+          <label>
+            <!-- ^ Label for number input. -->
+            Number
+            <input id="numberInput" type="number" min="0" value="21" required />
+              <!-- ^ Number input field. "required" means the form won't submit if empty. -->
+          </label>
+          <input id="numberRange" type="range" min="0" max="99" value="21" aria-label="Favorite number range" />
+          <label>
+            <!-- ^ Label for message input. -->
+            Lesson message
+            <textarea id="messageInput" rows="4" required>You can see the state change on chain.</textarea>
+              <!-- ^ Textarea for entering the lesson message. Default text is shown. -->
+          </label>
+          <div class="form-tools">
+            <button id="previewButton" type="button" class="ghost-btn inline-btn">Preview the path</button>
+            <button type="submit">Send to chain</button>
+          </div>
+          <div class="journey" id="journey">
+            <div id="journeyDraft" class="journey-step">Draft stirs</div>
+            <div id="journeyFlight" class="journey-step">Move leaves the browser</div>
+            <div id="journeyMined" class="journey-step">Block seals it</div>
+            <div id="journeyEcho" class="journey-step">Chain answers back</div>
+          </div>
+          <div id="draftPreview" class="draft-preview">
+            <p class="state-label">If this move lands</p>
+            <p id="draftSummary" class="draft-title">The next state has not taken a shape yet.</p>
+            <p id="draftDelta" class="draft-detail">Nudge the number, bend the message, and watch the possible future gather weight.</p>
+            <p id="draftMessage" class="mono small"></p>
+          </div>
+          <div class="quick-actions">
+            <button id="copyLiveButton" type="button" class="ghost-btn inline-btn">Echo live state</button>
+            <button id="surpriseButton" type="button" class="ghost-btn inline-btn">Surprise me</button>
+            <button id="replayButton" type="button" class="ghost-btn inline-btn">Replay last move</button>
+            <button id="watchButton" type="button" class="ghost-btn inline-btn">Watch the chain</button>
+          </div>
+          <p id="formStatus" class="small"></p>
+            <!-- ^ Status message after form submission (success or error). -->
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <h2>What-if paths</h2>
+          <span class="chip accent">Try scenes</span>
+        </div>
+        <div id="scenarioDeck" class="scenario-deck"></div>
+        <div class="story-grid">
+          <div id="moveMeter" class="story-box move-meter">
+            <p class="event-title">Move meter</p>
+            <p id="moveMeterTitle" class="draft-title">Nothing is leaning on the chain yet.</p>
+            <p id="moveMeterDetail" class="draft-detail">A tiny change is still a change. A bigger jump leaves a louder echo.</p>
+          </div>
+          <div class="story-box">
+            <p class="event-title">Recent chain moments</p>
+            <ul id="storyTrail" class="story-trail">
+              <li class="story-item">
+                <span class="story-time">--:--:--</span>
+                <div>
+                  <strong>The room is quiet.</strong>
+                  <p>The first real move will leave the first visible trace.</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <!-- ^ Fifth section: course roadmap (where the course goes next). -->
+        <!-- This list is also filled from API foundation data. -->
+        <div class="section-head">
+          <h2>Where the course goes next</h2>
+            <!-- ^ Heading for the course roadmap. -->
+          <span class="chip accent">Labs 2 to 6</span>
+            <!-- ^ Badge showing this is about future labs. -->
+        </div>
+        <ol id="nextLabs" class="timeline"></ol>
+          <!-- ^ Ordered list for the course progression (JavaScript fills this). -->
+      </section>
+    </main>
+    <script src="app.js"></script>
+      <!-- ^ Load the JavaScript file that contains all the behavior and interactivity. -->
+  </body>
+</html>

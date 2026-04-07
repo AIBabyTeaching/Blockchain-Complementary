@@ -4,10 +4,7 @@ This lab is the practical entry point for the course.
 
 ## Core Documents
 
-- [Step-by-step tutorial](../../docs/lab1/STEP_BY_STEP_TUTORIAL.md)
-- [Blockchain material](../../docs/lab1/BLOCKCHAIN_MATERIAL.md)
-- [Guide guide](../../docs/lab1/LAB1_GUIDE.md)
-- [Guide script](../../docs/lab1/Guide_SCRIPT.md)
+- [Guide guide](../../docs/lab1/LAB1.md)
 
 ## Components
 
