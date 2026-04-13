@@ -16,7 +16,7 @@ This lab is the practical entry point for the course.
 ## Quick Start
 
 ```bash
-docker compose up --build -d chain api frontend pythonlab
+docker compose up -d chain api frontend pythonlab
 docker compose run --rm deployer
 ```
 

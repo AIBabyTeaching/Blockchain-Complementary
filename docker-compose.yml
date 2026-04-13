@@ -1,19 +1,16 @@
-# This file is the orchestration map for the whole Lab 1 environment.
-# Docker Compose starts each service with a clear teaching role:
-# - `chain` gives us a local blockchain.
-# - `deployer` puts contracts onto that blockchain.
-# - `api` translates browser requests into blockchain calls.
-# - `frontend` shows the lab visually in the browser.
-# - `pythonlab` runs the concept-only hash/block demo.
-# - `dev` is a general helper container for workspace work.
+# This file is the orchestration map for the course workspace.
+# The key design choice is:
+# - use official images directly
+# - mount the workspace into the containers
+# - keep dependencies in named volumes
+# This means normal code edits are picked up on the next `docker compose up`
+# without rebuilding custom images for routine lab work.
 
 services:
   # `chain` is the local Ethereum-like blockchain node.
   # Hardhat runs here and exposes JSON-RPC on port 8545.
   chain:
-    build:
-      context: .
-      dockerfile: infra/docker/dev/Dockerfile
+    image: node:20-alpine
     container_name: bc-lab1-chain
     working_dir: /workspace/labs/lab1/blockchain
     command: sh -c "npm install && npx hardhat node --hostname 0.0.0.0"
@@ -21,12 +18,13 @@ services:
       - "8545:8545"
     volumes:
       - .:/workspace
+      - blockchain_node_modules:/workspace/labs/lab1/blockchain/node_modules
 
   # `deployer` is a one-shot service.
   # It compiles the contracts, deploys them to the running chain,
   # and writes the deployed addresses into the deployments folder.
   deployer:
-    image: blockchaincomplementary-chain
+    image: node:20-alpine
     container_name: bc-lab1-deployer
     working_dir: /workspace/labs/lab1/blockchain
     command: sh -c "apk add --no-cache gcompat && chmod +x /root/.cache/hardhat-nodejs/compilers-v2/linux-amd64/* && npm install && npx hardhat compile && npx hardhat run scripts/deploy.js --network localhost"
@@ -37,15 +35,14 @@ services:
       - chain
     volumes:
       - .:/workspace
+      - blockchain_node_modules:/workspace/labs/lab1/blockchain/node_modules
       - ./infra/solc-cache:/root/.cache/hardhat-nodejs/compilers-v2
 
   # `api` is the bridge between browser and blockchain.
   # The browser sends normal HTTP requests here.
   # The API then performs contract reads or blockchain transactions.
   api:
-    build:
-      context: .
-      dockerfile: infra/docker/api/Dockerfile
+    image: node:20-alpine
     container_name: bc-lab1-api
     working_dir: /workspace/labs/lab1/api
     command: sh -c "npm install && node src/server.js"
@@ -61,14 +58,13 @@ services:
       - "3000:3000"
     volumes:
       - .:/workspace
+      - lab1_api_node_modules:/workspace/labs/lab1/api/node_modules
 
   # `frontend` serves the static teaching UI with nginx.
   # Students open this in the browser to read state, send transactions,
   # and watch the live visualization.
   frontend:
-    build:
-      context: .
-      dockerfile: infra/docker/frontend/Dockerfile
+    image: nginx:1.27-alpine
     container_name: bc-lab1-frontend
     depends_on:
       - api
@@ -77,12 +73,39 @@ services:
     volumes:
       - ./labs/lab1/frontend:/usr/share/nginx/html:ro
 
+  # `lab2-api` teaches local accounts, balances, nonces, and transfers.
+  # It talks directly to the Hardhat node without deploying contracts yet.
+  lab2-api:
+    image: node:20-alpine
+    container_name: bc-lab2-api
+    working_dir: /workspace/labs/lab2/api
+    command: sh -c "npm install && node src/server.js"
+    environment:
+      PORT: 3001
+      RPC_URL: http://chain:8545
+    depends_on:
+      - chain
+    ports:
+      - "3001:3001"
+    volumes:
+      - .:/workspace
+      - lab2_api_node_modules:/workspace/labs/lab2/api/node_modules
+
+  # `lab2-frontend` is the visual UI for account state and local ETH transfers.
+  lab2-frontend:
+    image: nginx:1.27-alpine
+    container_name: bc-lab2-frontend
+    depends_on:
+      - lab2-api
+    ports:
+      - "8081:80"
+    volumes:
+      - ./labs/lab2/frontend:/usr/share/nginx/html:ro
+
   # `pythonlab` is the concept demo environment.
   # It stays running so the Python blockchain explanation script can be executed on demand.
   pythonlab:
-    build:
-      context: .
-      dockerfile: infra/docker/python/Dockerfile
+    image: python:3.12-alpine
     container_name: bc-lab1-python
     working_dir: /workspace/labs/lab1/python
     command: tail -f /dev/null
@@ -91,11 +114,15 @@ services:
 
   # `dev` is an extra utility container for manual exploration or future lab work.
   dev:
-    build:
-      context: .
-      dockerfile: infra/docker/dev/Dockerfile
+    image: node:20-alpine
     container_name: bc-lab1-dev
     working_dir: /workspace
     command: tail -f /dev/null
     volumes:
       - .:/workspace
+      - blockchain_node_modules:/workspace/labs/lab1/blockchain/node_modules
+
+volumes:
+  blockchain_node_modules:
+  lab1_api_node_modules:
+  lab2_api_node_modules:

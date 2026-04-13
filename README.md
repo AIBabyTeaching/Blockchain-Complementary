@@ -22,7 +22,7 @@ A Docker-first Guide workspace for the rescued blockchain course led by **Eng. A
 ## Quick start
 
 ```bash
-docker compose up --build -d chain api frontend pythonlab
+docker compose up -d chain api frontend pythonlab
 ```
 
 Then open:
@@ -39,6 +39,27 @@ docker compose run --rm dev npx hardhat compile --config /workspace/labs/lab1/bl
 docker compose run --rm deployer
 docker compose exec pythonlab python /workspace/labs/lab1/python/blockchain_demo.py
 ```
+
+Lab 2 runs on separate ports and uses the same local chain:
+
+```bash
+docker compose up -d chain lab2-api lab2-frontend
+```
+
+Then open:
+
+- Lab 2 frontend: `http://localhost:8081`
+- Lab 2 API: `http://localhost:3001/api/health`
+
+## Why no rebuild is needed for normal edits
+
+The Compose stack now uses official base images plus bind mounts and named volumes:
+
+- source code is mounted from the workspace into the containers
+- `node_modules` stay in Docker volumes
+- frontend files are served directly from the mounted lab folders
+
+So after code changes, `docker compose up -d ...` is enough in normal teaching flow. Rebuilds are only needed if you deliberately change image-level behavior.
 
 ## Guide intent
 

@@ -307,7 +307,7 @@ You need:
 ## Step 1: Start main containers
 
 ```bash
-docker compose up --build -d chain api frontend pythonlab
+docker compose up -d chain api frontend pythonlab
 ```
 
 ## Step 2: Check containers

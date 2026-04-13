@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lab 2 | Local Accounts and Transactions</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="glow glow-a"></div>
+    <div class="glow glow-b"></div>
+
+    <main class="shell">
+      <section class="panel hero">
+        <p class="eyebrow">Blockchain Complementary Course</p>
+        <h1>Lab 2: Accounts, balances, and local Ethereum transactions.</h1>
+        <p class="lead">
+          Before students build larger contracts, they need to see what a blockchain
+          transaction really moves: value, identity, ordering, and shared state.
+        </p>
+        <div class="hero-grid">
+          <div>
+            <span class="metric-label">Network</span>
+            <strong id="networkLabel">Loading...</strong>
+          </div>
+          <div>
+            <span class="metric-label">Current block</span>
+            <strong id="blockLabel">Loading...</strong>
+          </div>
+          <div>
+            <span class="metric-label">Focus</span>
+            <strong>Account -> Signer -> Transfer -> Nonce</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel explain-panel">
+        <div class="section-head">
+          <h2>What exactly is an Ethereum account?</h2>
+          <span class="chip">Read this first</span>
+        </div>
+        <div class="explain-box">
+          <p>
+            An Ethereum <strong>account</strong> is an identity on the blockchain. It has an
+            <strong>address</strong>, a <strong>balance</strong>, and a <strong>nonce</strong>.
+          </p>
+          <p>
+            A <strong>wallet</strong> is the tool that holds the private key. A
+            <strong>signer</strong> is the part that actually proves ownership when sending a
+            transaction.
+          </p>
+          <p>
+            In this lab, students will send native ETH between local Hardhat accounts and
+            observe three things immediately:
+          </p>
+          <ul class="explain-list">
+            <li>the sender balance decreases</li>
+            <li>the receiver balance increases</li>
+            <li>the sender nonce increments by one</li>
+          </ul>
+          <p>
+            This is the simplest honest blockchain transaction you can show before adding
+            smart-contract logic.
+          </p>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <h2>Concept repair</h2>
+          <span id="healthBadge" class="status pending">Checking chain...</span>
+        </div>
+        <div id="objectiveList" class="objective-grid"></div>
+        <div id="conceptCards" class="card-grid"></div>
+      </section>
+
+      <section class="panel two-col">
+        <div>
+          <div class="section-head">
+            <h2>Local accounts on this chain</h2>
+            <button id="refreshButton" class="ghost-btn" type="button">Refresh balances</button>
+          </div>
+          <div id="accountGrid" class="account-grid"></div>
+        </div>
+        <div>
+          <div class="section-head">
+            <h2>Latest block</h2>
+            <span class="chip accent">Watch the ledger</span>
+          </div>
+          <div id="blockCard" class="block-card">
+            <p class="muted">Loading latest block...</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel two-col">
+        <form id="transferForm" class="form-card">
+          <div class="section-head">
+            <h2>Send a local transfer</h2>
+            <span class="chip">Practice now</span>
+          </div>
+          <p id="formHint" class="form-hint">
+            Choose two different local accounts and send a small amount of ETH.
+          </p>
+          <label>
+            Sender
+            <select id="senderSelect" required></select>
+          </label>
+          <label>
+            Receiver
+            <select id="receiverSelect" required></select>
+          </label>
+          <label>
+            Amount (ETH)
+            <input id="amountInput" type="number" min="0.01" step="0.01" value="0.25" required />
+          </label>
+
+          <div id="stepProgress" class="step-progress hidden">
+            <div id="step1" class="step-item">
+              <span class="step-dot"></span>
+              <span class="step-label">Step 1 of 3 - API receives the transfer request.</span>
+            </div>
+            <div id="step2" class="step-item">
+              <span class="step-dot"></span>
+              <span class="step-label">Step 2 of 3 - Hardhat signs and mines the transaction.</span>
+            </div>
+            <div id="step3" class="step-item">
+              <span class="step-dot"></span>
+              <span class="step-label">Step 3 of 3 - Balances and block details refresh.</span>
+            </div>
+          </div>
+
+          <button id="sendButton" type="submit">Send local transfer</button>
+          <p id="formStatus" class="small form-status-text"></p>
+        </form>
+
+        <div>
+          <div class="section-head">
+            <h2>What changed after the transfer?</h2>
+            <span class="chip accent">Before to After</span>
+          </div>
+          <div id="resultCard" class="result-card empty">
+            <p class="muted">No transfer yet. Send one to compare balances, nonce, and block data.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <h2>Transaction path</h2>
+          <span class="chip accent">Live flow</span>
+        </div>
+        <div id="flowStage" class="flow-stage">
+          <div class="flow-row">
+            <div class="flow-col">
+              <div id="flowBrowser" class="flow-node active">Browser</div>
+              <p class="flow-node-desc">Collects sender, receiver, and amount.</p>
+            </div>
+            <div class="flow-arrow">to</div>
+            <div class="flow-col">
+              <div id="flowApi" class="flow-node">API</div>
+              <p class="flow-node-desc">Validates input and chooses the signer.</p>
+            </div>
+            <div class="flow-arrow">to</div>
+            <div class="flow-col">
+              <div id="flowWallet" class="flow-node">Signer Wallet</div>
+              <p class="flow-node-desc">Signs the transaction with the sender private key.</p>
+            </div>
+            <div class="flow-arrow">to</div>
+            <div class="flow-col">
+              <div id="flowChain" class="flow-node">Hardhat Node</div>
+              <p class="flow-node-desc">Mines the transaction into a block.</p>
+            </div>
+            <div class="flow-arrow">to</div>
+            <div class="flow-col">
+              <div id="flowBlock" class="flow-node">New Block</div>
+              <p class="flow-node-desc">Stores the transfer permanently in local history.</p>
+            </div>
+            <div class="flow-arrow">to</div>
+            <div class="flow-col">
+              <div id="flowReceiver" class="flow-node">Balances Updated</div>
+              <p class="flow-node-desc">Sender, receiver, and nonce state are refreshed.</p>
+            </div>
+          </div>
+          <div id="flowBubbles" class="flow-bubbles" aria-hidden="true"></div>
+        </div>
+        <p id="flowHint" class="small flow-hint">Submit a transfer to light up the full transaction path.</p>
+        <div class="event-panel">
+          <p class="event-title">Live events</p>
+          <ul id="eventFeed" class="event-feed">
+            <li class="event-item">System ready. Waiting for the first transfer.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="panel two-col">
+        <div>
+          <div class="section-head">
+            <h2>Transaction stages</h2>
+            <span class="chip">Lifecycle</span>
+          </div>
+          <ol id="stageList" class="timeline"></ol>
+        </div>
+        <div>
+          <div class="section-head">
+            <h2>Transfer rules in this lab</h2>
+            <span class="chip accent">Observe carefully</span>
+          </div>
+          <ul id="ruleList" class="rule-list"></ul>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
