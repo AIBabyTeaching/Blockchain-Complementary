@@ -570,3 +570,22 @@ Person are ready to leave Lab 2 if they can:
 - explain why sender nonce changes
 - explain why receiver balance changes without receiver nonce changing
 - explain how this prepares them for contract deployment in Lab 3
+
+___
+Account: An identity on the blockchain with an address, balance, and nonce.
+Address: A unique string representing an account’s location on the blockchain.
+Wallet: A tool that stores private keys and manages accounts for sending/receiving crypto.
+Private Key: A secret code that allows you to control and sign transactions from your account.
+Signer: The entity (person or software) that uses a private key to authorize transactions.
+Nonce: A counter that increases with every transaction sent from an account, preventing replay attacks.
+ETH: The native cryptocurrency of the Ethereum blockchain.
+Gwei: A small unit of ETH, used to measure transaction fees (1 ETH = 1,000,000,000 Gwei).
+Transaction: A signed message that moves ETH or calls a contract on the blockchain.
+Sender: The account that initiates and signs a transaction.
+Receiver: The account that receives ETH or data from a transaction.
+Gas: The fee paid to process and validate a transaction on the blockchain.
+Block: A group of transactions bundled and added to the blockchain.
+Blockchain Node: A computer running blockchain software that validates and stores blocks.
+API: The backend service that connects the frontend to the blockchain node.
+Frontend: The user interface (web page) for interacting with the blockchain lab.
+Hardhat: A local Ethereum development environment for testing and deploying smart contracts.
