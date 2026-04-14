@@ -88,8 +88,8 @@ function formatGwei(value) {
 
 async function buildWalletCatalog(provider) {
   const addresses = await provider.send("eth_accounts", []);
-  return localProfiles
-    .map((profile, index) => {
+  const entries = await Promise.all(
+    localProfiles.map(async (profile, index) => {
       const address = addresses[index];
       if (!address) {
         return null;
@@ -98,10 +98,12 @@ async function buildWalletCatalog(provider) {
       return {
         ...profile,
         address,
-        signer: provider.getSigner(address)
+        signer: await provider.getSigner(address)
       };
     })
-    .filter(Boolean);
+  );
+
+  return entries.filter(Boolean);
 }
 
 function findWallet(catalog, address) {
