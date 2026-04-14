@@ -361,7 +361,7 @@ Endpoints:
 - `GET /api/blocks/latest`: latest block summary
 - `POST /api/transactions/transfer`: validate, sign, send, wait, and return before/after state
 
-## D. `labs/lab2/frontend/index.html`
+## D. (OPTIONAL) `labs/lab2/frontend/index.html`
 
 Purpose:
 - defines the learning layout Person see in the browser
@@ -377,7 +377,7 @@ Main sections:
 - event feed
 - lifecycle rules and stages
 
-## E. `labs/lab2/frontend/app.js`
+## E. (OPTIONAL) `labs/lab2/frontend/app.js`
 
 This file drives the frontend behavior.
 
@@ -402,7 +402,7 @@ Important functions:
 - `submitTransfer(event)`: sends the transfer and updates the UI
 - `bootstrap()`: starts the page
 
-## F. `labs/lab2/frontend/styles.css`
+## F. (OPTIONAL) `labs/lab2/frontend/styles.css`
 
 Purpose:
 - defines the visual language of Lab 2
@@ -437,16 +437,18 @@ These questions force Person to watch the blockchain state instead of only click
 
 ---
 
-## 15. Suggested Classroom Walkthrough
+## 15. Suggested Steps to Understand
 
 1. Open the Lab 2 frontend.
 2. Point to the local accounts and explain funded test accounts.
-3. Explain balance and nonce before any transfer.
+3. Interpret balance and nonce before any transfer.
 4. Send a small transfer.
 5. Pause on the before/after panel.
-6. Ask the class why only sender nonce changes.
+6. Ask yourself why only sender nonce changes.
 7. Compare this with Lab 1 where state changed inside a contract.
-8. Explain that Lab 3 will combine both worlds: accounts plus contract deployment and interaction.
+
+___
+ISA, Lab 3 will combine both worlds: accounts plus contract deployment and interaction.
 
 ---
 
