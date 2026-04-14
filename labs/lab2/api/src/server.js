@@ -29,7 +29,7 @@ const localProfiles = [
   },
   {
     label: "Account 4",
-    role: "person wallet"
+    role: "Student wallet"
   }
 ];
 

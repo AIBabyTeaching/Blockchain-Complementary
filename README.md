@@ -48,7 +48,7 @@ docker compose up -d chain lab2-api lab2-frontend
 
 Then open:
 
-- Lab 2 frontend: `http://localhost:8081`
+- Lab 2 frontend: `http://localhost:8081`+
 - Lab 2 API: `http://localhost:3001/api/health`
 
 ## Why no rebuild is needed for normal edits
