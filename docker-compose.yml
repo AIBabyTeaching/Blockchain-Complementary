@@ -60,8 +60,8 @@ services:
       - .:/workspace
       - lab1_api_node_modules:/workspace/labs/lab1/api/node_modules
 
-  # `frontend` serves the static teaching UI with nginx.
-  # Students open this in the browser to read state, send transactions,
+  # `frontend` serves the static working UI with nginx.
+  # Person open this in the browser to read state, send transactions,
   # and watch the live visualization.
   frontend:
     image: nginx:1.27-alpine
@@ -73,7 +73,7 @@ services:
     volumes:
       - ./labs/lab1/frontend:/usr/share/nginx/html:ro
 
-  # `lab2-api` teaches local accounts, balances, nonces, and transfers.
+  # `lab2-api` works local accounts, balances, nonces, and transfers.
   # It talks directly to the Hardhat node without deploying contracts yet.
   lab2-api:
     image: node:20-alpine

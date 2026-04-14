@@ -9,7 +9,7 @@ from time import time
 
 
 # This Python file is NOT a real blockchain node.
-# It IS a teaching model that explains:
+# It IS a working model that explains:
 # 1. A block containing data + reference to previous block
 # 2. A hash acting as a fingerprint (tiny change = totally different hash)
 # 3. A chain being formed by hashes linking blocks together
@@ -110,7 +110,7 @@ def main() -> None:
     chain = [genesis, second, third]
       # ^ Create a Python list containing all three blocks (stores references, not copies).
 
-    # Print the full blockchain so students can inspect data and see the chain structure.
+    # Print the full blockchain so Person can inspect data and see the chain structure.
     for block in chain:
       # ^ Loop: iterate through each block in the chain, processing one at a time.
         print(f"Block #{block.index}")
@@ -161,4 +161,4 @@ if __name__ == "__main__":
     # 1. Executable script (run directly with: python blockchain_demo.py)
     # 2. Importable library (import as: from blockchain_demo import Block)
     main()
-      # ^ Call the main() function to run the entire blockchain teaching demo.
+      # ^ Call the main() function to run the entire blockchain working demo.

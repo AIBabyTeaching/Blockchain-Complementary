@@ -1,6 +1,6 @@
 # Lab 2 Master Guide (Accounts + Transactions)
 
-Goal: help students understand local Ethereum accounts, balances, nonces, and native ETH transfers before they build larger smart-contract workflows.
+Goal: help Person understand local Ethereum accounts, balances, nonces, and native ETH transfers before they build larger smart-contract workflows.
 
 ## 1. Why Lab 2 Comes Now
 
@@ -14,7 +14,7 @@ Lab 2 now answers a more basic question:
 
 **who is actually sending a blockchain transaction?**
 
-Before students write bigger contracts, they need to understand:
+Before Person write bigger contracts, they need to understand:
 - what an account is
 - what a wallet is
 - what a signer does
@@ -26,9 +26,9 @@ This is why Lab 2 stays inside the same local Hardhat stack but removes contract
 
 ---
 
-## 2. What Students Will Learn
+## 2. What Person Will Learn
 
-By the end of Lab 2, students should be able to explain:
+By the end of Lab 2, Person should be able to explain:
 - the difference between an account, an address, a private key, a wallet, and a signer
 - what a nonce is and why it increases
 - how a native ETH transfer differs from a smart-contract call
@@ -51,7 +51,7 @@ Lab 2 has 4 practical parts:
 
 ## 4. One-Minute Story
 
-Imagine four students share the same classroom blockchain network.
+Imagine four Person share the same classroom blockchain network.
 
 Each student has:
 - an address
@@ -65,7 +65,7 @@ If Student A sends `0.25 ETH` to Student B:
 - the chain records a new transaction hash
 - the node mines that transfer into a block
 
-That is the smallest real blockchain workflow that still teaches identity, value movement, validation, and ordering.
+That is the smallest real blockchain workflow that still works identity, value movement, validation, and ordering.
 
 ---
 
@@ -95,7 +95,7 @@ How to read it:
 - the wallet acts as signer
 - the signer sends a signed transaction
 - the chain validates and mines it
-- balance and nonce are account state that students can measure
+- balance and nonce are account state that Person can measure
 
 ---
 
@@ -212,7 +212,7 @@ Meaning:
 - reads latest block state
 
 ### `lab2-frontend`
-- serves the Lab 2 teaching UI on `8081`
+- serves the Lab 2 working UI on `8081`
 - shows account cards, latest block, transaction flow, and before/after results
 
 ---
@@ -256,7 +256,7 @@ Expected:
 
 ## Step 5: Inspect local accounts
 
-Students should observe:
+Person should observe:
 - each account has ETH
 - each account has a nonce
 - all of this is readable from the same chain
@@ -270,7 +270,7 @@ Example:
 
 ## Step 7: Observe the change
 
-Students should confirm:
+Person should confirm:
 - sender balance decreased
 - receiver balance increased
 - sender nonce increased by 1
@@ -288,7 +288,7 @@ Purpose:
 
 ### `GET /api/foundation`
 Purpose:
-- send teaching content to the frontend
+- send working content to the frontend
 - provide objectives, concept cards, stages, and rules
 
 ### `GET /api/accounts`
@@ -341,7 +341,7 @@ This is the core backend of Lab 2.
 Important data structures:
 - `localProfiles`: classroom wallets used in the lab
 - `conceptCards`: short learning cards for the frontend
-- `transactionStages`: the lifecycle students should memorize
+- `transactionStages`: the lifecycle Person should memorize
 - `transferRules`: simple validation and observation rules
 
 Important functions:
@@ -356,7 +356,7 @@ Important functions:
 
 Endpoints:
 - `GET /api/health`: chain status
-- `GET /api/foundation`: teaching content
+- `GET /api/foundation`: working content
 - `GET /api/accounts`: current account state
 - `GET /api/blocks/latest`: latest block summary
 - `POST /api/transactions/transfer`: validate, sign, send, wait, and return before/after state
@@ -364,7 +364,7 @@ Endpoints:
 ## D. `labs/lab2/frontend/index.html`
 
 Purpose:
-- defines the learning layout students see in the browser
+- defines the learning layout Person see in the browser
 
 Main sections:
 - hero and objective framing
@@ -393,7 +393,7 @@ Important functions:
 - `populateAccountSelects(accounts)`: fills sender/receiver dropdowns
 - `renderBlock(block)`: shows block number and latest tx
 - `renderTransferResult(data)`: shows before/after state
-- `loadFoundation()`: gets the static teaching content
+- `loadFoundation()`: gets the static working content
 - `loadHealth()`: checks whether the chain is alive
 - `loadAccounts()`: refreshes balances and nonces
 - `loadLatestBlock()`: refreshes the block panel
@@ -408,7 +408,7 @@ Purpose:
 - defines the visual language of Lab 2
 
 What it emphasizes:
-- readable dark teaching surface
+- readable dark working surface
 - balance cards
 - highlighted flow nodes
 - animated transfer bubbles
@@ -418,11 +418,11 @@ What it emphasizes:
 
 Purpose of these edits:
 - align older instructions with the no-rebuild workflow
-- avoid confusing students with `--build` when code changes are already mounted
+- avoid confusing Person with `--build` when code changes are already mounted
 
 ---
 
-## 14. What Students Should Notice During the Demo
+## 14. What Person Should Notice During the Demo
 
 After one successful transfer, ask them:
 
@@ -433,7 +433,7 @@ After one successful transfer, ask them:
 5. Did the latest block number stay the same or increase?
 6. Is the transaction hash unique even if the amount is repeated?
 
-These questions force students to watch the blockchain state instead of only clicking buttons.
+These questions force Person to watch the blockchain state instead of only clicking buttons.
 
 ---
 
@@ -463,7 +463,7 @@ A simple ETH transfer is already a blockchain transaction.
 
 ### "The API owns the money"
 Wrong.
-The API is only acting as a controlled teaching bridge that uses the sender wallet to sign.
+The API is only acting as a controlled working bridge that uses the sender wallet to sign.
 
 ### "All balance decrease equals transfer amount only"
 Not exactly.
@@ -504,7 +504,7 @@ docker compose stop lab2-api lab2-frontend chain
 
 ---
 
-## 18. Assignment for Students
+## 18. Assignment for Person
 
 ### Title
 Local Transaction Observation Exercise
@@ -531,7 +531,7 @@ For each transfer, record:
 
 ### Small implementation extension
 
-Ask students to modify one thing:
+Ask Person to modify one thing:
 - add a new concept card to the frontend
 - or add one more validation rule message in the API
 - or add a UI warning when sender and receiver are the same
@@ -561,7 +561,7 @@ Why this sequence is correct:
 
 ## 20. Final Checklist
 
-Students are ready to leave Lab 2 if they can:
+Person are ready to leave Lab 2 if they can:
 - define account, address, wallet, signer, balance, and nonce
 - run the Lab 2 frontend and API
 - send a local ETH transfer

@@ -59,7 +59,7 @@ The Compose stack now uses official base images plus bind mounts and named volum
 - `node_modules` stay in Docker volumes
 - frontend files are served directly from the mounted lab folders
 
-So after code changes, `docker compose up -d ...` is enough in normal teaching flow. Rebuilds are only needed if you deliberately change image-level behavior.
+So after code changes, `docker compose up -d ...` is enough in normal working flow. Rebuilds are only needed if you deliberately change image-level behavior.
 
 ## Guide intent
 
