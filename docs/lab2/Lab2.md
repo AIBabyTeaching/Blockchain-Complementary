@@ -1,6 +1,6 @@
 # Lab 2 Master Guide (Accounts + Transactions)
 
-Goal: help Person understand local Ethereum accounts, balances, nonces, and native ETH transfers before they build larger smart-contract workflows.
+Goal: help understanding local Ethereum accounts, balances, nonces, and native ETH transfers before they build larger smart-contract workflows.
 
 ## 1. Why Lab 2 Comes Now
 
@@ -14,7 +14,7 @@ Lab 2 now answers a more basic question:
 
 **who is actually sending a blockchain transaction?**
 
-Before Person write bigger contracts, they need to understand:
+Before we write bigger contracts, we need to understand:
 - what an account is
 - what a wallet is
 - what a signer does
@@ -26,9 +26,9 @@ This is why Lab 2 stays inside the same local Hardhat stack but removes contract
 
 ---
 
-## 2. What Person Will Learn
+## 2. What we Will Learn
 
-By the end of Lab 2, Person should be able to explain:
+By the end of Lab 2, we should be able to explain:
 - the difference between an account, an address, a private key, a wallet, and a signer
 - what a nonce is and why it increases
 - how a native ETH transfer differs from a smart-contract call
@@ -53,15 +53,15 @@ Lab 2 has 4 practical parts:
 
 Imagine four Person share the same classroom blockchain network.
 
-Each student has:
+Each person has:
 - an address
 - some ETH
 - a transaction counter
 
-If Student A sends `0.25 ETH` to Student B:
-- Student A balance decreases
-- Student B balance increases
-- Student A nonce increases by 1
+If person A sends `0.25 ETH` to person B:
+- person A balance decreases
+- person B balance increases
+- person A nonce increases by 1
 - the chain records a new transaction hash
 - the node mines that transfer into a block
 
