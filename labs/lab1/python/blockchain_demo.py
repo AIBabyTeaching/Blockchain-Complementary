@@ -93,24 +93,24 @@ def main() -> None:
 
     # Each block stores the hash of the PREVIOUS block.
     # This creates the chain structure - each block points back to the one before it.
-    second = make_block(1, "Person Alice earns a certificate", genesis.hash)
+    second = make_block(1, "Alice earns a certificate", genesis.hash)
       # ^ Create block #1 (second block):
       # ^   - index = 1 (second block)
-      # ^   - data = "Person Alice earns a certificate"
+      # ^   - data = "Alice earns a certificate"
       # ^   - previous_hash = genesis.hash (links to the first block's fingerprint)
       # ^   - This link is how the chain grows and becomes connected.
 
-    third = make_block(2, "Person Bob verifies the certificate", second.hash)
+    third = make_block(2, "Bob verifies the certificate", second.hash)
       # ^ Create block #2 (third block):
       # ^   - index = 2 (third block)
-      # ^   - data = "Person Bob verifies the certificate"
+      # ^   - data = "Bob verifies the certificate"
       # ^   - previous_hash = second.hash (links to the second block's fingerprint)
       # ^   - Now we have: genesis -> second -> third (a chain of 3 blocks)
 
     chain = [genesis, second, third]
       # ^ Create a Python list containing all three blocks (stores references, not copies).
 
-    # Print the full blockchain so Person can inspect data and see the chain structure.
+    # Print the full blockchain so you can inspect data and see the chain structure.
     for block in chain:
       # ^ Loop: iterate through each block in the chain, processing one at a time.
         print(f"Block #{block.index}")
@@ -131,7 +131,7 @@ def main() -> None:
           # ^ Same index as the original block (still in position 1).
         timestamp=second.timestamp,
           # ^ SAME timestamp as the original (so timestamp isn't what changed).
-        data="Person Alice earns a fake certificate",
+        data="Alice earns a fake certificate",
           # ^ CHANGED data: added the word "fake" to simulate tampering/fraud.
         previous_hash=genesis.hash,
           # ^ SAME previous_hash as original (still points to genesis block).

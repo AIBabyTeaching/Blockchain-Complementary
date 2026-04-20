@@ -61,7 +61,7 @@ services:
       - lab1_api_node_modules:/workspace/labs/lab1/api/node_modules
 
   # `frontend` serves the static working UI with nginx.
-  # Person open this in the browser to read state, send transactions,
+  # You open this in the browser to read state, send transactions,
   # and watch the live visualization.
   frontend:
     image: nginx:1.27-alpine
@@ -102,6 +102,53 @@ services:
     volumes:
       - ./labs/lab2/frontend:/usr/share/nginx/html:ro
 
+  # `lab3-deployer` compiles and deploys the voting contract for Lab 3.
+  # It writes deployment metadata that the Lab 3 API and frontend consume later.
+  lab3-deployer:
+    image: node:20-alpine
+    container_name: bc-lab3-deployer
+    working_dir: /workspace/labs/lab3/blockchain
+    command: sh -c "apk add --no-cache gcompat && chmod +x /root/.cache/hardhat-nodejs/compilers-v2/linux-amd64/* && npm install && npx hardhat compile && npx hardhat run scripts/deploy.js --network localhost"
+    environment:
+      HARDHAT_NETWORK: localhost
+      RPC_URL: http://chain:8545
+    depends_on:
+      - chain
+    volumes:
+      - .:/workspace
+      - lab3_blockchain_node_modules:/workspace/labs/lab3/blockchain/node_modules
+      - ./infra/solc-cache:/root/.cache/hardhat-nodejs/compilers-v2
+
+  # `lab3-api` is the bridge between the voting contract and the Lab 3 UI.
+  # It reads proposals, voter state, and vote history, and signs vote transactions.
+  lab3-api:
+    image: node:20-alpine
+    container_name: bc-lab3-api
+    working_dir: /workspace/labs/lab3/api
+    command: sh -c "npm install && node src/server.js"
+    environment:
+      PORT: 3002
+      RPC_URL: http://chain:8545
+      LAB_ROOT: /workspace/labs/lab3
+    depends_on:
+      - chain
+    ports:
+      - "3002:3002"
+    volumes:
+      - .:/workspace
+      - lab3_api_node_modules:/workspace/labs/lab3/api/node_modules
+
+  # `lab3-frontend` is the classroom UI for the decentralized voting lab.
+  lab3-frontend:
+    image: nginx:1.27-alpine
+    container_name: bc-lab3-frontend
+    depends_on:
+      - lab3-api
+    ports:
+      - "8082:80"
+    volumes:
+      - ./labs/lab3/frontend:/usr/share/nginx/html:ro
+
   # `pythonlab` is the concept demo environment.
   # It stays running so the Python blockchain explanation script can be executed on demand.
   pythonlab:
@@ -126,3 +173,5 @@ volumes:
   blockchain_node_modules:
   lab1_api_node_modules:
   lab2_api_node_modules:
+  lab3_blockchain_node_modules:
+  lab3_api_node_modules:

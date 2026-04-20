@@ -1,6 +1,6 @@
 # Lab 2 Master Guide (Accounts + Transactions)
 
-Goal: help understanding local Ethereum accounts, balances, nonces, and native ETH transfers before they build larger smart-contract workflows.
+Goal: help you understand local Ethereum accounts, balances, nonces, and native ETH transfers before you build larger smart-contract workflows.
 
 ## 1. Why Lab 2 Comes Now
 
@@ -28,14 +28,14 @@ This is why Lab 2 stays inside the same local Hardhat stack but removes contract
 
 ## 2. What we Will Learn
 
-By the end of Lab 2, we should be able to explain:
+By the end of Lab 2, you should be able to explain:
 - the difference between an account, an address, a private key, a wallet, and a signer
 - what a nonce is and why it increases
 - how a native ETH transfer differs from a smart-contract call
 - how sender and receiver balances change after a transaction
 - how the API, signer, Hardhat node, and frontend work together
 
-They should also be able to run a complete local transfer and describe exactly what changed on-chain.
+You should also be able to run a complete local transfer and describe exactly what changed on-chain.
 
 ---
 
@@ -51,17 +51,17 @@ Lab 2 has 4 practical parts:
 
 ## 4. One-Minute Story
 
-Imagine four Person share the same classroom blockchain network.
+Imagine four people share the same classroom blockchain network.
 
-Each person has:
+Each account has:
 - an address
 - some ETH
 - a transaction counter
 
-If person A sends `0.25 ETH` to person B:
-- person A balance decreases
-- person B balance increases
-- person A nonce increases by 1
+If account A sends `0.25 ETH` to account B:
+- account A balance decreases
+- account B balance increases
+- account A nonce increases by 1
 - the chain records a new transaction hash
 - the node mines that transfer into a block
 
@@ -95,7 +95,7 @@ How to read it:
 - the wallet acts as signer
 - the signer sends a signed transaction
 - the chain validates and mines it
-- balance and nonce are account state that Person can measure
+- balance and nonce are account state that you can measure
 
 ---
 
@@ -256,7 +256,7 @@ Expected:
 
 ## Step 5: Inspect local accounts
 
-Person should observe:
+You should observe:
 - each account has ETH
 - each account has a nonce
 - all of this is readable from the same chain
@@ -270,7 +270,7 @@ Example:
 
 ## Step 7: Observe the change
 
-Person should confirm:
+You should confirm:
 - sender balance decreased
 - receiver balance increased
 - sender nonce increased by 1
@@ -341,7 +341,7 @@ This is the core backend of Lab 2.
 Important data structures:
 - `localProfiles`: classroom wallets used in the lab
 - `conceptCards`: short learning cards for the frontend
-- `transactionStages`: the lifecycle Person should memorize
+- `transactionStages`: the lifecycle you should memorize
 - `transferRules`: simple validation and observation rules
 
 Important functions:
@@ -364,7 +364,7 @@ Endpoints:
 ## D. (OPTIONAL) `labs/lab2/frontend/index.html`
 
 Purpose:
-- defines the learning layout Person see in the browser
+- defines the learning layout you see in the browser
 
 Main sections:
 - hero and objective framing
@@ -418,13 +418,13 @@ What it emphasizes:
 
 Purpose of these edits:
 - align older instructions with the no-rebuild workflow
-- avoid confusing Person with `--build` when code changes are already mounted
+- avoid confusing you with `--build` when code changes are already mounted
 
 ---
 
-## 14. What Person Should Notice During the Demo
+## 14. Questions to Answer After One Successful Transfer
 
-After one successful transfer, ask them:
+After one successful transfer, answer the following:
 
 1. Which balance decreased?
 2. Which balance increased?
@@ -433,22 +433,22 @@ After one successful transfer, ask them:
 5. Did the latest block number stay the same or increase?
 6. Is the transaction hash unique even if the amount is repeated?
 
-These questions force Person to watch the blockchain state instead of only clicking buttons.
+These questions keep the focus on blockchain state instead of only clicking buttons.
 
 ---
 
-## 15. Suggested Steps to Understand
+## 15. Suggested Self-Guided Flow
 
 1. Open the Lab 2 frontend.
-2. Point to the local accounts and explain funded test accounts.
+2. Review the local accounts and note that these are funded test accounts.
 3. Interpret balance and nonce before any transfer.
 4. Send a small transfer.
-5. Pause on the before/after panel.
-6. Ask yourself why only sender nonce changes.
+5. Inspect the before/after panel.
+6. Confirm why only sender nonce changes.
 7. Compare this with Lab 1 where state changed inside a contract.
 
 ___
-ISA, Lab 3 will combine both worlds: accounts plus contract deployment and interaction.
+Lab 3 will combine both worlds: accounts plus the first real smart-contract DApp through classroom voting.
 
 ---
 
@@ -506,7 +506,7 @@ docker compose stop lab2-api lab2-frontend chain
 
 ---
 
-## 18. Assignment for Person
+## 18. Assignment for You
 
 ### Title
 Local Transaction Observation Exercise
@@ -533,7 +533,7 @@ For each transfer, record:
 
 ### Small implementation extension
 
-Ask Person to modify one thing:
+Modify one thing:
 - add a new concept card to the frontend
 - or add one more validation rule message in the API
 - or add a UI warning when sender and receiver are the same
@@ -548,7 +548,7 @@ This keeps the assignment close to Lab 2 without jumping too far ahead.
 flowchart LR
     L1["Lab 1<br/>Hash + block + contract state"]
     L2["Lab 2<br/>Accounts + balances + nonce + transfer"]
-    L3["Lab 3<br/>Compile + deploy + interact with contract"]
+    L3["Lab 3<br/>Deploy + vote in a smart contract"]
     L4["Lab 4<br/>Registry logic"]
 
     L1 --> L2 --> L3 --> L4
@@ -557,26 +557,26 @@ flowchart LR
 Why this sequence is correct:
 - Lab 1 explains shared state
 - Lab 2 explains who sends state-changing requests
-- Lab 3 combines both into deliberate contract deployment and interaction
+- Lab 3 combines both into deliberate contract deployment and smart-contract voting interaction
 
 ---
 
 ## 20. Final Checklist
 
-Person are ready to leave Lab 2 if they can:
+You are ready to leave Lab 2 if you can:
 - define account, address, wallet, signer, balance, and nonce
 - run the Lab 2 frontend and API
 - send a local ETH transfer
 - explain why sender nonce changes
 - explain why receiver balance changes without receiver nonce changing
-- explain how this prepares them for contract deployment in Lab 3
+- explain how this prepares you for smart-contract voting in Lab 3
 
 ___
 Account: An identity on the blockchain with an address, balance, and nonce.
 Address: A unique string representing an account’s location on the blockchain.
 Wallet: A tool that stores private keys and manages accounts for sending/receiving crypto.
 Private Key: A secret code that allows you to control and sign transactions from your account.
-Signer: The entity (person or software) that uses a private key to authorize transactions.
+Signer: The entity or software component that uses a private key to authorize transactions.
 Nonce: A counter that increases with every transaction sent from an account, preventing replay attacks.
 ETH: The native cryptocurrency of the Ethereum blockchain.
 Gwei: A small unit of ETH, used to measure transaction fees (1 ETH = 1,000,000,000 Gwei).

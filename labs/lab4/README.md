@@ -1,3 +1,3 @@
 # Lab 4 Placeholder
 
-The certificate or Person registry contract will live here.
+The certificate registry contract will live here.

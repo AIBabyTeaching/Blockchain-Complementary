@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lab 3 | Classroom Voting DApp</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="glow glow-a"></div>
+    <div class="glow glow-b"></div>
+
+    <main class="shell">
+      <section class="panel hero">
+        <p class="eyebrow">Blockchain Complementary Course</p>
+        <h1>Lab 3: the first full smart-contract voting DApp.</h1>
+        <p class="lead">
+          Lab 2 showed who sends a transaction. Lab 3 shows what happens when those
+          same accounts call a Solidity contract with a real rule set and shared state.
+        </p>
+        <div class="hero-grid">
+          <div>
+            <span class="metric-label">Network</span>
+            <strong id="networkLabel">Loading...</strong>
+          </div>
+          <div>
+            <span class="metric-label">Current block</span>
+            <strong id="blockLabel">Loading...</strong>
+          </div>
+          <div>
+            <span class="metric-label">Focus</span>
+            <strong>Signer -> Contract Call -> Event -> Updated State</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel explain-panel">
+        <div class="section-head">
+          <h2>Why voting is the right next step</h2>
+          <span class="chip">Transition from Lab 2</span>
+        </div>
+        <div class="explain-box">
+          <p>
+            A vote is still a transaction, but unlike Lab 2 it does not move ETH between
+            two accounts. Instead, it calls a smart contract that applies rules to shared
+            on-chain state.
+          </p>
+          <p>
+            The contract decides whether the action is allowed. In this lab, that means:
+          </p>
+          <ul class="explain-list">
+            <li>only deployed proposals can be chosen</li>
+            <li>each address can vote once</li>
+            <li>voting closes automatically at the deadline</li>
+          </ul>
+          <p>
+            That is the key move from “transactions exist” to “contract logic governs what
+            a transaction is allowed to do.”
+          </p>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <h2>Concept repair</h2>
+          <span id="healthBadge" class="status pending">Checking chain...</span>
+        </div>
+        <div id="objectiveList" class="objective-grid"></div>
+        <div id="conceptCards" class="card-grid"></div>
+      </section>
+
+      <section class="panel two-col">
+        <div>
+          <div class="section-head">
+            <h2>Election status</h2>
+            <button id="refreshButton" class="ghost-btn" type="button">Refresh election</button>
+          </div>
+          <p id="deployNotice" class="notice hidden"></p>
+          <div id="electionCard" class="election-card">
+            <p class="muted">Loading election status...</p>
+          </div>
+        </div>
+        <div>
+          <div class="section-head">
+            <h2>Local voter accounts</h2>
+            <span class="chip accent">Signer choices</span>
+          </div>
+          <div id="accountGrid" class="account-grid"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <h2>Proposal board</h2>
+          <span class="chip accent">Choose visually</span>
+        </div>
+        <div id="proposalGrid" class="proposal-grid"></div>
+      </section>
+
+      <section class="panel two-col">
+        <form id="voteForm" class="form-card">
+          <div class="section-head">
+            <h2>Cast a vote</h2>
+            <span class="chip">One address = one vote</span>
+          </div>
+          <p id="formHint" class="form-hint">
+            Choose a local account, then choose a proposal card and submit the vote.
+          </p>
+          <label>
+            Voter account
+            <select id="voterSelect" required></select>
+          </label>
+          <div class="selection-box">
+            <span class="mini-label">Selected proposal</span>
+            <strong id="selectedProposalLabel">No proposal selected yet.</strong>
+          </div>
+
+          <div id="stepProgress" class="step-progress hidden">
+            <div id="step1" class="step-item">
+              <span class="step-dot"></span>
+              <span class="step-label">Step 1 of 3 - API validates the voter and proposal.</span>
+            </div>
+            <div id="step2" class="step-item">
+              <span class="step-dot"></span>
+              <span class="step-label">Step 2 of 3 - Hardhat mines the vote transaction.</span>
+            </div>
+            <div id="step3" class="step-item">
+              <span class="step-dot"></span>
+              <span class="step-label">Step 3 of 3 - Contract totals and vote history refresh.</span>
+            </div>
+          </div>
+
+          <button id="voteButton" type="submit">Send vote to contract</button>
+          <p id="formStatus" class="small form-status-text"></p>
+        </form>
+
+        <div>
+          <div class="section-head">
+            <h2>What changed after the vote?</h2>
+            <span class="chip accent">Before to After</span>
+          </div>
+          <div id="resultCard" class="result-card empty">
+            <p class="muted">No vote yet. Cast one to compare nonce, proposal count, and leader state.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <h2>Transaction path</h2>
+          <span class="chip accent">Contract flow</span>
+        </div>
+        <div id="flowStage" class="flow-stage">
+          <div class="flow-row">
+            <div class="flow-col">
+              <div id="flowBrowser" class="flow-node active">Browser</div>
+              <p class="flow-node-desc">Selects a voter account and proposal.</p>
+            </div>
+            <div class="flow-arrow">to</div>
+            <div class="flow-col">
+              <div id="flowApi" class="flow-node">API</div>
+              <p class="flow-node-desc">Loads deployment metadata and validates the request.</p>
+            </div>
+            <div class="flow-arrow">to</div>
+            <div class="flow-col">
+              <div id="flowSigner" class="flow-node">Signer</div>
+              <p class="flow-node-desc">Uses the selected local account to authorize the vote.</p>
+            </div>
+            <div class="flow-arrow">to</div>
+            <div class="flow-col">
+              <div id="flowContract" class="flow-node">ClassroomVoting</div>
+              <p class="flow-node-desc">Enforces one vote per address and the deadline rule.</p>
+            </div>
+            <div class="flow-arrow">to</div>
+            <div class="flow-col">
+              <div id="flowEvent" class="flow-node">Vote Event</div>
+              <p class="flow-node-desc">The contract emits VoteCast for later history lookup.</p>
+            </div>
+            <div class="flow-arrow">to</div>
+            <div class="flow-col">
+              <div id="flowState" class="flow-node">State Updated</div>
+              <p class="flow-node-desc">Proposal totals, leader, and voter status refresh.</p>
+            </div>
+          </div>
+          <div id="flowBubbles" class="flow-bubbles" aria-hidden="true"></div>
+        </div>
+        <p id="flowHint" class="small flow-hint">Cast a vote to light up the full contract interaction path.</p>
+        <div class="event-panel">
+          <p class="event-title">Live events</p>
+          <ul id="eventFeed" class="event-feed">
+            <li class="event-item">System ready. Waiting for deployment or first vote.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="panel two-col">
+        <div>
+          <div class="section-head">
+            <h2>Recent vote history</h2>
+            <span class="chip accent">From contract events</span>
+          </div>
+          <ul id="historyList" class="history-list"></ul>
+        </div>
+        <div>
+          <div class="section-head">
+            <h2>Rules and stages</h2>
+            <span class="chip">Read like a checklist</span>
+          </div>
+          <ol id="stageList" class="timeline"></ol>
+          <ul id="ruleList" class="rule-list"></ul>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

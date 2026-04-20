@@ -14,10 +14,10 @@ A Docker-first Guide workspace for the rescued blockchain course led by **Eng. A
 
 1. Lab 1: hashing, blocks, local chain, and a tiny full-stack blockchain app.
 2. Lab 2: Hardhat node and local Ethereum accounts.
-3. Lab 3: `SimpleStorage` deployment and interaction.
-4. Lab 4: certificate or Person registry contract.
+3. Lab 3: deploy and use a classroom voting smart contract.
+4. Lab 4: certificate registry contract.
 5. Lab 5: access control, security, and tests.
-6. Lab 6: mini-project demo and Person presentations.
+6. Lab 6: mini-project demo and presentations.
 
 ## Quick start
 
@@ -48,8 +48,20 @@ docker compose up -d chain lab2-api lab2-frontend
 
 Then open:
 
-- Lab 2 frontend: `http://localhost:8081`+
+- Lab 2 frontend: `http://localhost:8081`
 - Lab 2 API: `http://localhost:3001/api/health`
+
+Lab 3 also runs on separate ports and uses the same local chain:
+
+```bash
+docker compose up -d chain lab3-api lab3-frontend
+docker compose run --rm lab3-deployer
+```
+
+Then open:
+
+- Lab 3 frontend: `http://localhost:8082`
+- Lab 3 API: `http://localhost:3002/api/health`
 
 ## Why no rebuild is needed for normal edits
 

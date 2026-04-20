@@ -101,12 +101,12 @@ Example in this lab:
 ### Transaction = "please update" message
 A transaction is you asking the smart contract to change something.
 
-In class words:
+Simple wording:
 - read = "show me current value"
 - transaction = "please save new value"
 
 
-### One-line summary to tell
+### One-line Summary
 "Blockchain is a linked notebook where fingerprints protect trust, and transactions update shared records using clear rules."
 
 ---

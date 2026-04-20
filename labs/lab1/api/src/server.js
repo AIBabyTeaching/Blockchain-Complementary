@@ -125,7 +125,7 @@ async function getSimpleStorageContract(withSigner = false) {
   const provider = new ethers.JsonRpcProvider(rpcUrl);
     // ^ Create a connection to the Hardhat node at rpcUrl. This is read-only (no transactions).
   const code = await provider.getCode(contractAddress);
-    // ^ Ask the chain: "Is there bytecode at this address?" Response is hex string or "0x" (empty).
+    // ^ Query the chain for bytecode at this address. Response is hex string or "0x" (empty).
   if (!code || code === "0x") {
     // ^ If no code at the address, the contract was never deployed (or chain was reset).
     return {
@@ -170,7 +170,7 @@ app.get("/api/health", async (_req, res) => {
     const provider = new ethers.JsonRpcProvider(rpcUrl);
       // ^ Create a provider connection to Hardhat.
     const blockNumber = await provider.getBlockNumber();
-      // ^ Ask the chain: "What is your latest block number?" Shows the chain is alive.
+      // ^ Query the latest block number to confirm the chain is alive.
     res.json({ ok: true, blockNumber, rpcUrl });
       // ^ Return JSON with success flag and the current block number.
   } catch (error) {
