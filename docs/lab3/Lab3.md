@@ -2,6 +2,33 @@
 
 Goal: move from account-only transactions into the first full smart-contract DApp by deploying, reading, and writing to a classroom voting contract.
 
+## Visual Overview: How Lab 3 Works
+
+```mermaid
+flowchart TD
+    User["User (You)"] -->|"Chooses proposal & account"| Frontend["Lab 3 Frontend"]
+    Frontend -->|"Sends vote request"| API["Lab 3 API"]
+    API -->|"Sends transaction"| Contract["ClassroomVoting Smart Contract"]
+    Contract -->|"Checks rules & updates state"| Blockchain["Blockchain (Hardhat Node)"]
+    Contract -->|"Emits VoteCast event"| API
+    API -->|"Returns updated results"| Frontend
+    Frontend -->|"Shows new vote totals, status, history"| User
+```
+
+This diagram shows the simple flow: you choose, the UI sends, the contract checks, the blockchain updates, and you see the results. All rules are enforced by the contract, not just the UI.
+
+---
+
+### How Lab 3 Differs from Previous Labs
+- **Lab 1:** Focused on basic blockchain building blocks (hashing, blocks, chaining, simple state)—no accounts or transactions.
+- **Lab 2:** Introduced accounts, signers, and ETH transfers—transactions move value but don’t enforce complex rules.
+- **Lab 3:** Adds smart contracts—transactions now trigger contract logic, enforcing real rules (like one vote per address) and storing results on-chain.
+
+**Why use a DApp instead of a centralized app?**
+- A DApp enforces rules and stores results on the blockchain, so no single party can cheat, censor, or alter the outcome—everyone can verify the process independently.
+
+---
+
 ## 1. Why This Is the Right Lab 3
 
 Lab 1 introduced:
@@ -650,3 +677,4 @@ You are ready to leave Lab 3 if you can:
 | Revert                      | When a contract rejects a transaction and undoes any changes                               |
 | Contract Rule               | A rule enforced by the contract code (e.g., one address = one vote)                        |
 | Source of Truth             | The authoritative place where data is stored (here, the contract on-chain)                 |
+
