@@ -9,7 +9,7 @@ async function main() {
 
   const electionTitle =
     process.env.ELECTION_TITLE || "Lab 3 Classroom Vote: Best Blockchain Use Case";
-  const votingDurationSeconds = Number(process.env.VOTING_DURATION_SECONDS || 86400);
+  const votingDurationSeconds = Number(process.env.VOTING_DURATION_SECONDS || 300);
   const proposalNames = [
     "Certificate verification",
     "Supply chain transparency",
