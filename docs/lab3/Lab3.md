@@ -5,30 +5,30 @@ Goal: move from account-only transactions into the first full smart-contract DAp
 ## 1. Why This Is the Right Lab 3
 
 Lab 1 introduced:
-- hashing
-- blocks
-- chaining
-- basic smart-contract state
+- **hashing** (turning data into a fixed-size code, like a fingerprint for data)
+- **blocks** (bundles of transactions/data, chained together)
+- **chaining** (linking blocks so each depends on the previous)
+- **basic smart-contract state** (storing data in a contract on the blockchain)
 
 Lab 2 introduced:
-- local Ethereum accounts
-- signers
-- balances
-- nonces
-- value transfers
+- **local Ethereum accounts** (unique blockchain addresses you control locally)
+- **signers** (accounts that can authorize/send transactions)
+- **balances** (amount of ETH each account holds)
+- **nonces** (a counter for each account, increases with every transaction)
+- **value transfers** (sending ETH from one account to another)
 
 Lab 3 now combines both worlds:
-- a specific account signs the transaction
-- the transaction calls a smart contract
-- the contract decides whether the action is valid
-- the shared on-chain state changes only if the rule is satisfied
+- **a specific account signs the transaction** (the user’s account authorizes the action)
+- **the transaction calls a smart contract** (instead of just sending ETH, it triggers contract code)
+- **the contract decides whether the action is valid** (rules are enforced by code, not just the UI)
+- **the shared on-chain state changes only if the rule is satisfied** (contract updates data only if all conditions are met)
 
 From the candidate ideas, **decentralized voting** is the best continuation because it makes the contract rule visible immediately:
 
-- one address = one vote
-- proposals live on-chain
-- vote totals live on-chain
-- voting stops after a deadline
+- **one address = one vote** (each account can only vote once, enforced by the contract)
+- **proposals live on-chain** (the list of choices is stored in the contract, not just the UI)
+- **vote totals live on-chain** (the contract keeps the official count)
+- **voting stops after a deadline** (the contract won’t accept votes after a set time)
 
 That gives you your first real example of “a transaction that is not just money movement, but governed logic.”
 
@@ -599,3 +599,54 @@ You are ready to leave Lab 3 if you can:
 - explain the purpose of the deadline
 - explain the purpose of `VoteCast` events
 - read nonce, block, proposal count, and leader changes after a vote
+
+## Glossary of Terms (All Labs)
+
+| Term                        | Explanation                                                                                 |
+|-----------------------------|--------------------------------------------------------------------------------------------|
+| Hashing                     | Turning data into a unique fixed-size code (like a fingerprint for data)                    |
+| Block                       | A bundle of transactions/data, linked to previous blocks                                    |
+| Chaining                    | Linking blocks so each depends on the previous, forming a chain                             |
+| Smart Contract State        | Data stored inside a contract on the blockchain                                             |
+| Local Ethereum Account      | A blockchain address you control on your computer                                           |
+| Signer                      | An account that can authorize (sign) transactions                                          |
+| Balance                     | The amount of ETH (Ether) an account holds                                                 |
+| Nonce                       | A counter for each account, increases with every transaction                               |
+| Value Transfer              | Sending ETH from one account to another                                                    |
+| Transaction                 | An action sent to the blockchain (e.g., sending ETH, calling a contract)                   |
+| Smart Contract              | Code deployed on the blockchain that enforces rules                                        |
+| Contract Call               | Sending a transaction to a contract to trigger its logic                                   |
+| Proposal                    | An option to vote for in the election                                                      |
+| Vote                        | A transaction that records a user’s choice on-chain                                        |
+| Event                       | A log emitted by the contract (e.g., VoteCast) to signal something happened               |
+| Deadline                    | The time after which voting is closed                                                      |
+| Deployment Metadata         | Info about where and how the contract is deployed                                          |
+| Frontend                    | The user interface (browser app)                                                           |
+| API                         | The backend server that talks to the blockchain and serves data to the frontend            |
+| Chain                       | The blockchain network (here, the local Hardhat node)                                      |
+| On-chain                    | Data or logic that lives on the blockchain, not just in the UI or backend                  |
+| Decentralized Application   | (DApp) An app where the main logic and data are enforced by blockchain smart contracts      |
+| VoteCast Event              | A specific event emitted by the contract when a vote is successfully cast                  |
+| ProposalCreated Event       | An event emitted when proposals are initialized in the contract                            |
+| Organizer                   | The account that deployed the contract and manages the election                            |
+| VotersParticipated          | The number of unique voters who have voted in the election                                 |
+| RecordedVoteIndexPlusOne    | Contract mapping to track if an address has voted and for which proposal                   |
+| Contract Storage            | The permanent data held by the contract on the blockchain                                  |
+| Contract Event              | A log entry emitted by the contract, useful for tracking history but not storing state     |
+| Hardhat Node                | A local Ethereum blockchain used for development and testing                               |
+| Docker Compose              | A tool to run multiple services (blockchain, API, frontend) together for the lab           |
+| Deployment Script           | Code that deploys the contract and sets up initial state                                   |
+| Test Script                 | Code that checks if the contract rules work as expected                                    |
+| Voting Deadline             | The cutoff time after which no more votes are accepted                                     |
+| Proposal Count              | The number of proposals available in the election                                          |
+| Current Leader              | The proposal currently leading in vote count                                               |
+| Vote History                | The list of all votes cast, reconstructed from contract events                             |
+| Nonce (again)               | (Repeated for emphasis) The transaction count for an account, increases with each action   |
+| Contract Address            | The unique blockchain address where the contract is deployed                               |
+| ABI (Application Binary Interface) | The description of the contract’s functions and events, needed to interact with it   |
+| JSON-RPC                    | The protocol used by the API to communicate with the blockchain                            |
+| Localhost                   | The local machine (your computer) running the blockchain and services                      |
+| State Update                | A change in the contract’s stored data as a result of a transaction                        |
+| Revert                      | When a contract rejects a transaction and undoes any changes                               |
+| Contract Rule               | A rule enforced by the contract code (e.g., one address = one vote)                        |
+| Source of Truth             | The authoritative place where data is stored (here, the contract on-chain)                 |
