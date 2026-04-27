@@ -46,11 +46,28 @@
                 <th>Energy Profile</th>
                 <th>Decentralization</th>
                 <th>Security Model</th>
-                <th>How to explain it in Lab 4</th>
+                <th>Explainability</th>
               </tr>
             </thead>
             <tbody id="proofTableBody"></tbody>
           </table>
+        </div>
+        <div class="proof-simulator">
+          <div class="section-head simulator-head">
+            <div>
+              <h3>Proof mode simulator</h3>
+              <p class="small muted">
+                Educational simulation only: the real chain is still Hardhat. This shows how the selected proof model would treat the same registry action.
+              </p>
+            </div>
+            <label class="compact-label">
+              Simulated proof
+              <select id="proofModeSelect"></select>
+            </label>
+          </div>
+          <div id="proofSimulationCard" class="proof-simulation-card">
+            <p class="muted">Loading proof simulator...</p>
+          </div>
         </div>
       </section>
 
@@ -66,13 +83,13 @@
       <section class="panel">
         <div class="section-head">
           <h2>How to explain the output</h2>
-          <span class="chip accent">Teaching guide</span>
+          <span class="chip accent">Guide</span>
         </div>
         <div class="explain-grid">
           <article class="explain-card">
             <p class="mini-label">Proof table</p>
             <h3>Network layer</h3>
-            <p>Use this to explain how different blockchains would secure and order the same certificate transactions.</p>
+            <p>Can explain how different blockchains would secure and order the same certificate transactions.</p>
           </article>
           <article class="explain-card">
             <p class="mini-label">Registry status</p>

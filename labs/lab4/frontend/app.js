@@ -6,6 +6,8 @@ const blockLabel = document.getElementById("blockLabel");
 const objectiveList = document.getElementById("objectiveList");
 const conceptCards = document.getElementById("conceptCards");
 const proofTableBody = document.getElementById("proofTableBody");
+const proofModeSelect = document.getElementById("proofModeSelect");
+const proofSimulationCard = document.getElementById("proofSimulationCard");
 const deployNotice = document.getElementById("deployNotice");
 const registryCard = document.getElementById("registryCard");
 const accountGrid = document.getElementById("accountGrid");
@@ -47,7 +49,10 @@ const flowNodes = {
 const runtime = {
   accounts: [],
   registry: null,
-  history: []
+  history: [],
+  proofs: [],
+  selectedProofMechanism: "PoA",
+  simulatedAction: null
 };
 
 function escapeHtml(value) {
@@ -200,6 +205,8 @@ function renderCards(cards) {
 }
 
 function renderProofs(proofs) {
+  runtime.proofs = proofs;
+
   proofTableBody.innerHTML = proofs
     .map(
       (proof) => `
@@ -214,6 +221,155 @@ function renderProofs(proofs) {
       `
     )
     .join("");
+}
+
+function populateProofModeSelect(proofs) {
+  const previousValue = proofModeSelect.value || runtime.selectedProofMechanism;
+  proofModeSelect.innerHTML = proofs
+    .map(
+      (proof) =>
+        `<option value="${escapeHtml(proof.mechanism)}">${escapeHtml(
+          `${proof.mechanism} | ${proof.resourceUsed}`
+        )}</option>`
+    )
+    .join("");
+
+  runtime.selectedProofMechanism =
+    proofs.find((proof) => proof.mechanism === previousValue)?.mechanism ||
+    proofs.find((proof) => proof.mechanism === "PoA")?.mechanism ||
+    proofs[0]?.mechanism ||
+    "";
+
+  proofModeSelect.value = runtime.selectedProofMechanism;
+}
+
+function selectedProof() {
+  return (
+    runtime.proofs.find((proof) => proof.mechanism === runtime.selectedProofMechanism) ||
+    runtime.proofs[0] ||
+    null
+  );
+}
+
+function simulatedActionTitle(action) {
+  if (!action) {
+    return "No registry action selected yet";
+  }
+
+  if (action.type === "issue") {
+    return `Issuing ${action.certificateName}`;
+  }
+
+  if (action.type === "revoke") {
+    return `Revoking ${shortValue(action.certificateHash, 12, 6)}`;
+  }
+
+  return `Verifying ${shortValue(action.certificateHash, 12, 6)}`;
+}
+
+function simulatedActionExplanation(action, proof) {
+  if (!action) {
+    return "Choose a proof mode, then issue, verify, or revoke a certificate. The simulator will explain what the selected consensus model would do underneath the same application workflow.";
+  }
+
+  if (action.type === "verify") {
+    return `Verification is read-only. Under ${proof.mechanism}, validators would not need to create a new block for this check because no contract storage changes. The frontend simply reads the current registry state.`;
+  }
+
+  return `This ${action.type} action changed registry state in block ${action.blockNumber}. Under ${proof.mechanism}, the selected proof model would decide who gets to order and publish that block. The CertificateRegistry contract still decides whether the issuer action is allowed.`;
+}
+
+function renderProofSimulation() {
+  const proof = selectedProof();
+  if (!proof) {
+    proofSimulationCard.innerHTML = `<p class="muted">Proof data is not loaded yet.</p>`;
+    return;
+  }
+
+  const action = runtime.simulatedAction;
+  const steps =
+    action?.type === "verify"
+      ? [
+          "The browser sends a hash verification request.",
+          "The API reads the deployed registry contract.",
+          "No new block is produced because verification does not change state.",
+          "The selected proof model matters for the blocks that created the current state, not for this read-only lookup."
+        ]
+      : proof.simulationSteps || [
+          proof.labUse || "The selected proof model would help order the registry transaction.",
+          "The certificate contract still enforces application rules after the transaction reaches the chain."
+        ];
+
+  const actionMeta = action?.txHash
+    ? `<p><strong>Observed Hardhat tx:</strong> <span class="mono wrap">${escapeHtml(action.txHash)}</span></p>`
+    : `<p><strong>Observed action:</strong> ${action ? "read-only call, no transaction hash" : "none yet"}</p>`;
+
+  proofSimulationCard.innerHTML = `
+    <div class="simulation-grid">
+      <article class="simulation-summary">
+        <p class="mini-label">Selected proof mode</p>
+        <h3>${escapeHtml(proof.mechanism)}</h3>
+        <p>${escapeHtml(proof.labUse || "")}</p>
+        <div class="status-strip">
+          <span class="status-pill neutral">Resource: ${escapeHtml(proof.resourceUsed)}</span>
+          <span class="status-pill ${proof.energyProfile === "Very High" ? "closed" : "open"}">Energy: ${escapeHtml(proof.energyProfile)}</span>
+          <span class="status-pill neutral">Decentralization: ${escapeHtml(proof.decentralization)}</span>
+        </div>
+      </article>
+      <article class="simulation-summary">
+        <p class="mini-label">Current simulated action</p>
+        <h3>${escapeHtml(simulatedActionTitle(action))}</h3>
+        <p>${escapeHtml(simulatedActionExplanation(action, proof))}</p>
+        ${actionMeta}
+      </article>
+    </div>
+    <div class="simulation-track">
+      <div class="sim-node active">Registry action</div>
+      <div class="sim-arrow">to</div>
+      <div class="sim-node active">${escapeHtml(proof.simulationActor || "Proof participant")}</div>
+      <div class="sim-arrow">to</div>
+      <div class="sim-node active">Block ordering</div>
+      <div class="sim-arrow">to</div>
+      <div class="sim-node active">Contract rule check</div>
+    </div>
+    <ol class="simulation-steps">
+      ${steps.map((step) => `<li>${escapeHtml(step)}</li>`).join("")}
+    </ol>
+    <div class="explain-note">
+      <strong>One line:</strong>
+      ${escapeHtml(proof.simulationRisk || "Consensus chooses and secures block production; the smart contract enforces certificate rules.")}
+    </div>
+  `;
+}
+
+function setSimulatedAction(type, result) {
+  if (type === "issue") {
+    runtime.simulatedAction = {
+      type,
+      blockNumber: result.blockNumber,
+      txHash: result.txHash,
+      certificateHash: result.certificate.certificateHash,
+      certificateName: result.certificate.studentName
+    };
+  } else if (type === "revoke") {
+    runtime.simulatedAction = {
+      type,
+      blockNumber: result.blockNumber,
+      txHash: result.txHash,
+      certificateHash: result.certificate.certificateHash,
+      certificateName: result.certificate.studentName || "revoked certificate"
+    };
+  } else {
+    runtime.simulatedAction = {
+      type,
+      blockNumber: result.latestBlock?.blockNumber,
+      txHash: "",
+      certificateHash: result.certificate.certificateHash,
+      certificateName: result.certificate.studentName || "certificate hash"
+    };
+  }
+
+  renderProofSimulation();
 }
 
 function renderStages(stages) {
@@ -470,6 +626,8 @@ async function loadFoundation() {
   renderObjectives(data.objectives);
   renderCards(data.cards);
   renderProofs(data.proofMechanisms);
+  populateProofModeSelect(data.proofMechanisms);
+  renderProofSimulation();
   renderStages(data.stages);
   renderRules(data.registryRules);
 }
@@ -549,6 +707,7 @@ issueForm.addEventListener("submit", async (event) => {
     revokeHashInput.value = result.certificate.certificateHash;
     renderIssueResult(result);
     renderCertificateCard(verifyResultCard, result.certificate, result.latestBlock);
+    setSimulatedAction("issue", result);
     await refreshDashboard();
 
     issueStatus.textContent = `Issued certificate for ${result.certificate.studentName}.`;
@@ -583,6 +742,7 @@ verifyForm.addEventListener("submit", async (event) => {
     });
 
     renderCertificateCard(verifyResultCard, result.certificate, result.latestBlock);
+    setSimulatedAction("verify", result);
     verifyStatus.textContent = `Verification result: ${certificateStatusLabel(result.certificate)}.`;
     addEvent(`Verification result: ${certificateStatusLabel(result.certificate)}.`, "ok");
   } catch (error) {
@@ -622,6 +782,7 @@ revokeForm.addEventListener("submit", async (event) => {
 
     renderRevokeResult(result);
     renderCertificateCard(verifyResultCard, result.certificate, result.latestBlock);
+    setSimulatedAction("revoke", result);
     await refreshDashboard();
 
     revokeStatus.textContent = `Revoked certificate ${shortValue(result.certificate.certificateHash, 12, 6)}.`;
@@ -637,6 +798,11 @@ revokeForm.addEventListener("submit", async (event) => {
 });
 
 sampleHashButton.addEventListener("click", fillSampleHash);
+proofModeSelect.addEventListener("change", () => {
+  runtime.selectedProofMechanism = proofModeSelect.value;
+  renderProofSimulation();
+  addEvent(`Simulated proof mode changed to ${proofModeSelect.value}.`, "info");
+});
 refreshButton.addEventListener("click", async () => {
   addEvent("Refreshing registry, accounts, and history.", "info");
   try {

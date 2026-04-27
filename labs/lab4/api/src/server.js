@@ -26,7 +26,15 @@ const proofMechanisms = [
     energyProfile: "Very High",
     decentralization: "High",
     securityModel: "Hash difficulty",
-    labUse: "A miner would spend compute to place the issue or revoke transaction into a block."
+    labUse: "A miner would spend compute to place the issue or revoke transaction into a block.",
+    simulationActor: "Miner",
+    simulationRisk: "Attackers must control enough compute power to rewrite or dominate block production.",
+    simulationSteps: [
+      "The certificate transaction enters the pending transaction pool.",
+      "Miners compete by hashing block candidates until one satisfies the difficulty target.",
+      "The winning miner publishes the block that contains the issue or revoke transaction.",
+      "Other nodes verify the work, then the CertificateRegistry contract rules remain the final application check."
+    ]
   },
   {
     mechanism: "PoS",
@@ -34,7 +42,15 @@ const proofMechanisms = [
     energyProfile: "Low",
     decentralization: "High",
     securityModel: "Economic penalties",
-    labUse: "A validator with locked stake would include the registry transaction and risk penalties for dishonest behavior."
+    labUse: "A validator with locked stake would include the registry transaction and risk penalties for dishonest behavior.",
+    simulationActor: "Staked validator",
+    simulationRisk: "Dishonest validators can lose locked stake, so cheating becomes economically expensive.",
+    simulationSteps: [
+      "The certificate transaction waits for a validator proposal slot.",
+      "A staked validator proposes a block containing the registry transaction.",
+      "Other validators attest that the block is valid.",
+      "If the validator cheats, economic penalties protect the chain while the contract still enforces issuer rules."
+    ]
   },
   {
     mechanism: "PoA",
@@ -42,7 +58,15 @@ const proofMechanisms = [
     energyProfile: "Very Low",
     decentralization: "Low",
     securityModel: "Trusted validators",
-    labUse: "Known institutions, such as an academy or ministry, could act as validators for a private certificate chain."
+    labUse: "Known institutions, such as an academy or ministry, could act as validators for a private certificate chain.",
+    simulationActor: "Known authority validator",
+    simulationRisk: "Security depends on trusted validator identities and governance, not open competition.",
+    simulationSteps: [
+      "The certificate transaction is submitted to a private or consortium chain.",
+      "A known authority, such as an academy or ministry validator, produces the next block.",
+      "The block records the registry transaction quickly with very low energy use.",
+      "This is practical for institutions, but users must trust the validator set."
+    ]
   },
   {
     mechanism: "PoC",
@@ -50,7 +74,15 @@ const proofMechanisms = [
     energyProfile: "Low",
     decentralization: "Medium",
     securityModel: "Disk commitment",
-    labUse: "Validators would prove storage commitment before helping order certificate registry transactions."
+    labUse: "Validators would prove storage commitment before helping order certificate registry transactions.",
+    simulationActor: "Storage committer",
+    simulationRisk: "Participants must prove committed disk capacity instead of spending compute or locking stake.",
+    simulationSteps: [
+      "Participants prepare disk space commitments before block production.",
+      "The network selects or favors a participant based on valid storage proofs.",
+      "The selected participant includes the registry transaction in a block.",
+      "The certificate contract still decides whether the issuer can write the certificate status."
+    ]
   },
   {
     mechanism: "PoH",
@@ -58,7 +90,15 @@ const proofMechanisms = [
     energyProfile: "Low",
     decentralization: "High (with PoS)",
     securityModel: "Verifiable ordering",
-    labUse: "Use the event history to explain ordering: the issue event must appear before the revoke event."
+    labUse: "Use the event history to explain ordering: the issue event must appear before the revoke event.",
+    simulationActor: "Ordering clock plus validators",
+    simulationRisk: "The hash chain proves event order, but validator security is still needed around it.",
+    simulationSteps: [
+      "A continuous hash chain creates a verifiable time order for transactions.",
+      "The issue or revoke transaction is placed into that ordered stream.",
+      "Validators use the ordering record to agree on what happened first.",
+      "Use Lab 4 history to show that a certificate must be issued before revocation makes sense."
+    ]
   },
   {
     mechanism: "PoI",
@@ -66,7 +106,15 @@ const proofMechanisms = [
     energyProfile: "Low",
     decentralization: "Medium",
     securityModel: "Behavioral scoring",
-    labUse: "Active trusted participants could gain influence based on stake plus useful network activity."
+    labUse: "Active trusted participants could gain influence based on stake plus useful network activity.",
+    simulationActor: "High-importance participant",
+    simulationRisk: "Influence is based on a score, so poor scoring design can bias who gets block power.",
+    simulationSteps: [
+      "Participants receive importance scores from stake plus useful network activity.",
+      "A high-importance participant is favored to help produce or approve a block.",
+      "The certificate transaction is included by a participant with meaningful network activity.",
+      "This lets you discuss whether active institutions should receive more influence."
+    ]
   },
   {
     mechanism: "PoCo",
@@ -74,7 +122,15 @@ const proofMechanisms = [
     energyProfile: "Low",
     decentralization: "Medium",
     securityModel: "Contribution validation",
-    labUse: "Validators would be rewarded for useful contribution, not arbitrary computation."
+    labUse: "Validators would be rewarded for useful contribution, not arbitrary computation.",
+    simulationActor: "Useful-work contributor",
+    simulationRisk: "The network must reliably validate that the claimed useful work was actually performed.",
+    simulationSteps: [
+      "Participants submit useful contributions instead of arbitrary mining work.",
+      "The network validates the contribution before rewarding or selecting the participant.",
+      "A valid contributor helps include the certificate registry transaction in a block.",
+      "Use this to discuss useful validation work versus pure compute waste."
+    ]
   },
   {
     mechanism: "PoR",
@@ -82,7 +138,15 @@ const proofMechanisms = [
     energyProfile: "Low",
     decentralization: "Medium-Low",
     securityModel: "Trust history",
-    labUse: "Accredited organizations with strong trust history could be preferred as validators."
+    labUse: "Accredited organizations with strong trust history could be preferred as validators.",
+    simulationActor: "Reputation-weighted validator",
+    simulationRisk: "Security depends on reputation records, so new participants may have less power.",
+    simulationSteps: [
+      "Organizations build trust history over time.",
+      "High-reputation validators are preferred to produce or approve blocks.",
+      "The certificate registry transaction is ordered by a trusted participant.",
+      "This maps naturally to accredited universities, ministries, or certification authorities."
+    ]
   }
 ];
 
