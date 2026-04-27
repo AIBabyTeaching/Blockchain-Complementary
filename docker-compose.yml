@@ -149,6 +149,52 @@ services:
     volumes:
       - ./labs/lab3/frontend:/usr/share/nginx/html:ro
 
+  # `lab4-deployer` compiles and deploys the certificate registry for Lab 4.
+  # It also issues one sample certificate so verification has data immediately.
+  lab4-deployer:
+    image: node:20-alpine
+    container_name: bc-lab4-deployer
+    working_dir: /workspace/labs/lab4/blockchain
+    command: sh -c "apk add --no-cache gcompat && chmod +x /root/.cache/hardhat-nodejs/compilers-v2/linux-amd64/* && npm install && npx hardhat compile && npx hardhat run scripts/deploy.js --network localhost"
+    environment:
+      HARDHAT_NETWORK: localhost
+      RPC_URL: http://chain:8545
+    depends_on:
+      - chain
+    volumes:
+      - .:/workspace
+      - lab4_blockchain_node_modules:/workspace/labs/lab4/blockchain/node_modules
+      - ./infra/solc-cache:/root/.cache/hardhat-nodejs/compilers-v2
+
+  # `lab4-api` bridges the certificate registry contract and proof table to the UI.
+  lab4-api:
+    image: node:20-alpine
+    container_name: bc-lab4-api
+    working_dir: /workspace/labs/lab4/api
+    command: sh -c "npm install && node src/server.js"
+    environment:
+      PORT: 3003
+      RPC_URL: http://chain:8545
+      LAB_ROOT: /workspace/labs/lab4
+    depends_on:
+      - chain
+    ports:
+      - "3003:3003"
+    volumes:
+      - .:/workspace
+      - lab4_api_node_modules:/workspace/labs/lab4/api/node_modules
+
+  # `lab4-frontend` is the UI for certificate issuing, verifying, revoking, and proofs.
+  lab4-frontend:
+    image: nginx:1.27-alpine
+    container_name: bc-lab4-frontend
+    depends_on:
+      - lab4-api
+    ports:
+      - "8083:80"
+    volumes:
+      - ./labs/lab4/frontend:/usr/share/nginx/html:ro
+
   # `pythonlab` is the concept demo environment.
   # It stays running so the Python blockchain explanation script can be executed on demand.
   pythonlab:
@@ -175,3 +221,5 @@ volumes:
   lab2_api_node_modules:
   lab3_blockchain_node_modules:
   lab3_api_node_modules:
+  lab4_blockchain_node_modules:
+  lab4_api_node_modules:

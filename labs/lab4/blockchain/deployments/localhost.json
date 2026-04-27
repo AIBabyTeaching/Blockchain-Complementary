@@ -1,0 +1,17 @@
+{
+  "network": "localhost",
+  "deployedAt": "2026-04-27T18:34:38.768Z",
+  "deployedBlock": 1,
+  "issuer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+  "sampleCertificate": {
+    "studentId": "STU-1001",
+    "studentName": "Mariam Hassan",
+    "courseName": "Blockchain Foundations",
+    "grade": "A",
+    "certificateHash": "0x6581b297137d02cc26be365c8afc8f6b302d88221323ffc95f3869279e9c9a04",
+    "issuedBlock": 2
+  },
+  "contracts": {
+    "CertificateRegistry": "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+  }
+}

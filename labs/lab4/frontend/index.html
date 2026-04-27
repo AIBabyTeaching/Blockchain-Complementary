@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lab 4 | Certificate Registry and Proofs</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="panel hero">
+        <p class="eyebrow">Blockchain Complementary Course</p>
+        <h1>Lab 4: certificate registry and proof mechanisms.</h1>
+        <p class="lead">
+          Lab 3 showed contract rules through voting. Lab 4 uses the same workflow to
+          issue, verify, and revoke certificate hashes while comparing the proof models
+          used by different blockchains.
+        </p>
+        <div class="hero-grid">
+          <div>
+            <span class="metric-label">Network</span>
+            <strong id="networkLabel">Loading...</strong>
+          </div>
+          <div>
+            <span class="metric-label">Current block</span>
+            <strong id="blockLabel">Loading...</strong>
+          </div>
+          <div>
+            <span class="metric-label">Focus</span>
+            <strong>Issuer -> Registry -> Event -> Public Verification</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <h2>Proof mechanisms</h2>
+          <span class="chip">Consensus comparison</span>
+        </div>
+        <div class="proof-table-wrap">
+          <table class="proof-table">
+            <thead>
+              <tr>
+                <th>Mechanism</th>
+                <th>Resource Used</th>
+                <th>Energy Profile</th>
+                <th>Decentralization</th>
+                <th>Security Model</th>
+                <th>How to explain it in Lab 4</th>
+              </tr>
+            </thead>
+            <tbody id="proofTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <h2>Concept repair</h2>
+          <span id="healthBadge" class="status pending">Checking chain...</span>
+        </div>
+        <div id="objectiveList" class="objective-grid"></div>
+        <div id="conceptCards" class="card-grid"></div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <h2>How to explain the output</h2>
+          <span class="chip accent">Teaching guide</span>
+        </div>
+        <div class="explain-grid">
+          <article class="explain-card">
+            <p class="mini-label">Proof table</p>
+            <h3>Network layer</h3>
+            <p>Use this to explain how different blockchains would secure and order the same certificate transactions.</p>
+          </article>
+          <article class="explain-card">
+            <p class="mini-label">Registry status</p>
+            <h3>Contract state</h3>
+            <p>Active, issued, and revoked counts come from contract storage. These values are the source of truth.</p>
+          </article>
+          <article class="explain-card">
+            <p class="mini-label">Issue result</p>
+            <h3>Write transaction</h3>
+            <p>A transaction hash, block number, nonce change, and count change prove that the issuer changed state.</p>
+          </article>
+          <article class="explain-card">
+            <p class="mini-label">Verification result</p>
+            <h3>Read-only check</h3>
+            <p>No transaction hash appears because verification reads state. It answers: not found, valid, or revoked.</p>
+          </article>
+          <article class="explain-card">
+            <p class="mini-label">Revoke result</p>
+            <h3>Status change</h3>
+            <p>Revocation keeps the record but flips validity. This protects audit history better than deletion.</p>
+          </article>
+          <article class="explain-card">
+            <p class="mini-label">Event history</p>
+            <h3>Audit trail</h3>
+            <p>Events help explain order: which certificate was issued or revoked, in which block, and by which transaction.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel two-col">
+        <div>
+          <div class="section-head">
+            <h2>Registry status</h2>
+            <button id="refreshButton" class="ghost-btn" type="button">Refresh registry</button>
+          </div>
+          <p id="deployNotice" class="notice hidden"></p>
+          <div id="registryCard" class="registry-card">
+            <p class="muted">Loading registry status...</p>
+          </div>
+        </div>
+        <div>
+          <div class="section-head">
+            <h2>Local accounts</h2>
+            <span class="chip accent">Issuer and viewers</span>
+          </div>
+          <div id="accountGrid" class="account-grid"></div>
+        </div>
+      </section>
+
+      <section class="panel two-col">
+        <form id="issueForm" class="form-card">
+          <div class="section-head">
+            <h2>Issue certificate</h2>
+            <span class="chip">State-changing</span>
+          </div>
+          <label>
+            Issuer account
+            <select id="issuerSelect" required></select>
+          </label>
+          <label>
+            Student ID
+            <input id="studentIdInput" required value="STU-1002" />
+          </label>
+          <label>
+            Student name
+            <input id="studentNameInput" required value="Ahmed Samir" />
+          </label>
+          <label>
+            Course name
+            <input id="courseNameInput" required value="Smart Contract Basics" />
+          </label>
+          <label>
+            Grade
+            <input id="gradeInput" required value="A-" />
+          </label>
+          <button id="issueButton" type="submit">Issue certificate hash</button>
+          <p id="issueStatus" class="small form-status-text"></p>
+        </form>
+
+        <div>
+          <div class="section-head">
+            <h2>Issue result</h2>
+            <span class="chip accent">Before to After</span>
+          </div>
+          <div id="issueResultCard" class="result-card empty">
+            <p class="muted">No new certificate issued yet.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel two-col">
+        <form id="verifyForm" class="form-card">
+          <div class="section-head">
+            <h2>Verify certificate</h2>
+            <button id="sampleHashButton" class="ghost-btn" type="button">Use sample hash</button>
+          </div>
+          <label>
+            Certificate hash
+            <input id="verifyHashInput" class="mono" required placeholder="0x..." />
+          </label>
+          <button id="verifyButton" type="submit">Verify hash</button>
+          <p id="verifyStatus" class="small form-status-text"></p>
+        </form>
+
+        <div>
+          <div class="section-head">
+            <h2>Verification result</h2>
+            <span class="chip">Read-only</span>
+          </div>
+          <div id="verifyResultCard" class="result-card empty">
+            <p class="muted">Verify a sample or newly issued hash.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel two-col">
+        <form id="revokeForm" class="form-card">
+          <div class="section-head">
+            <h2>Revoke certificate</h2>
+            <span class="chip danger">Issuer only</span>
+          </div>
+          <label>
+            Issuer account
+            <select id="revokeIssuerSelect" required></select>
+          </label>
+          <label>
+            Certificate hash
+            <input id="revokeHashInput" class="mono" required placeholder="0x..." />
+          </label>
+          <label>
+            Reason
+            <input id="revokeReasonInput" required value="Correction requested" />
+          </label>
+          <button id="revokeButton" type="submit">Revoke certificate</button>
+          <p id="revokeStatus" class="small form-status-text"></p>
+        </form>
+
+        <div>
+          <div class="section-head">
+            <h2>Recent certificate history</h2>
+            <span class="chip accent">From events</span>
+          </div>
+          <ul id="historyList" class="history-list"></ul>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head">
+          <h2>Registry path</h2>
+          <span class="chip accent">Contract flow</span>
+        </div>
+        <div id="flowStage" class="flow-stage">
+          <div class="flow-row">
+            <div class="flow-col">
+              <div id="flowBrowser" class="flow-node active">Browser</div>
+              <p class="flow-node-desc">Submits certificate fields or a hash.</p>
+            </div>
+            <div class="flow-arrow">to</div>
+            <div class="flow-col">
+              <div id="flowApi" class="flow-node">API</div>
+              <p class="flow-node-desc">Loads deployment metadata and validates input.</p>
+            </div>
+            <div class="flow-arrow">to</div>
+            <div class="flow-col">
+              <div id="flowSigner" class="flow-node">Issuer Signer</div>
+              <p class="flow-node-desc">Signs issue or revoke transactions.</p>
+            </div>
+            <div class="flow-arrow">to</div>
+            <div class="flow-col">
+              <div id="flowContract" class="flow-node">CertificateRegistry</div>
+              <p class="flow-node-desc">Stores hashes and certificate status.</p>
+            </div>
+            <div class="flow-arrow">to</div>
+            <div class="flow-col">
+              <div id="flowEvent" class="flow-node">Registry Event</div>
+              <p class="flow-node-desc">Emits issued or revoked history.</p>
+            </div>
+            <div class="flow-arrow">to</div>
+            <div class="flow-col">
+              <div id="flowVerifier" class="flow-node">Verifier Reads</div>
+              <p class="flow-node-desc">Checks whether a hash exists and is valid.</p>
+            </div>
+          </div>
+          <div id="flowBubbles" class="flow-bubbles" aria-hidden="true"></div>
+        </div>
+        <p id="flowHint" class="small flow-hint">Issue, verify, or revoke a certificate to light up the registry path.</p>
+        <div class="event-panel">
+          <p class="event-title">Live events</p>
+          <ul id="eventFeed" class="event-feed">
+            <li class="event-item">System ready. Waiting for deployment or first action.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="panel two-col">
+        <div>
+          <div class="section-head">
+            <h2>Rules and stages</h2>
+            <span class="chip">Read like a checklist</span>
+          </div>
+          <ol id="stageList" class="timeline"></ol>
+          <ul id="ruleList" class="rule-list"></ul>
+        </div>
+        <div class="explain-box">
+          <h2>Lab bridge</h2>
+          <p>
+            The proof table explains how networks agree on block order. The registry
+            contract explains how an application decides whether a certificate action is
+            allowed after the block producer receives the transaction.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
