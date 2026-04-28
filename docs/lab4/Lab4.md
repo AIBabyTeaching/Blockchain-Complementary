@@ -416,7 +416,7 @@ Covered behaviors:
 Purpose:
 - connect browser actions to the deployed registry
 - compute hashes consistently with the contract
-- expose proof mechanism teaching data
+- expose proof mechanism concept data
 - return readable before/after transaction effects
 
 ## E. `labs/lab4/frontend/*`
