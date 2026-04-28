@@ -166,6 +166,21 @@ What this means:
 
 ## 8. Transaction and Verification Lifecycle
 
+Lab 4 has three different lifecycle types. This is important because people often call everything a "transaction", but only some actions actually write to the blockchain.
+
+| Action | Endpoint | Blockchain type | Who signs? | What changes? |
+|---|---|---|---|---|
+| Issue certificate | `POST /api/certificates/issue` | State-changing transaction | Issuer account | new certificate record, `certificateCount`, issuer nonce, event history |
+| Verify certificate | `POST /api/certificates/verify` | Read-only contract call | Nobody signs a transaction | nothing changes; the API only reads `exists`, `valid`, `revoked` |
+| Revoke certificate | `POST /api/certificates/revoke` | State-changing transaction | Issuer account | certificate status, `revokedCount`, issuer nonce, event history |
+
+The lifecycle you should explain in class:
+- **Issue** creates the certificate record.
+- **Verify** reads the certificate record.
+- **Revoke** changes the certificate status without deleting the record.
+
+### Issue Lifecycle
+
 ```mermaid
 sequenceDiagram
     autonumber
@@ -181,16 +196,124 @@ sequenceDiagram
     API->>API: Compute hash + validate issuer
     API->>Signer: Select issuer account
     Signer->>Contract: issueCertificate(...)
+    Contract->>Contract: Check onlyIssuer + duplicate hash
     Contract->>Chain: State update mined
     Contract-->>API: CertificateIssued event
     API-->>Frontend: Hash, count change, nonce change
+```
+
+What happens:
+1. The user enters certificate fields in the frontend.
+2. The API computes a deterministic `certificateHash`.
+3. The API checks that the selected account is the issuer.
+4. The issuer signs a transaction calling `issueCertificate`.
+5. The contract checks:
+   - sender is the issuer
+   - hash is not zero
+   - fields are not empty
+   - hash was not issued before
+6. The contract stores the certificate record.
+7. `certificateCount` increases by 1.
+8. The issuer nonce increases by 1.
+9. A `CertificateIssued` event is emitted.
+10. The frontend shows transaction hash, block number, nonce change, and registry count change.
+
+Frontend output to point at:
+- **Transaction hash**: proof that a write transaction was submitted.
+- **Block number**: where the write was mined.
+- **Nonce before -> after**: proves the issuer sent a transaction.
+- **Registry count before -> after**: proves contract storage changed.
+- **Certificate hash**: the fingerprint can be verified later.
+
+### Verification Lifecycle
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant User
+    participant Frontend
+    participant API
+    participant Contract as CertificateRegistry
+    participant Chain as Hardhat Node
 
     User->>Frontend: Verify certificate hash
     Frontend->>API: POST /api/certificates/verify
-    API->>Contract: verifyCertificate(hash)
+    API->>API: Validate hash format
+    API->>Contract: verifyCertificate(hash) as read-only call
+    Contract->>Chain: Read stored certificate status
     Contract-->>API: exists, valid, revoked
     API-->>Frontend: Verification result
 ```
+
+What happens:
+1. The user provides a certificate hash.
+2. The API checks that the hash is a valid `bytes32` hex value.
+3. The API calls `verifyCertificate(hash)`.
+4. No signer is needed because this is not a write.
+5. No transaction is mined.
+6. No nonce changes.
+7. The contract returns one of three teaching states:
+   - `exists=false`, `valid=false`, `revoked=false`: not found
+   - `exists=true`, `valid=true`, `revoked=false`: valid certificate
+   - `exists=true`, `valid=false`, `revoked=true`: revoked certificate
+
+Frontend output to point at:
+- **Valid**: the hash exists and has not been revoked.
+- **Not found**: the registry has no record for this hash.
+- **Revoked**: the hash exists, but it is no longer valid.
+- **Read at block**: tells which chain state was read.
+- **No transaction hash**: because verification did not change state.
+
+### Revoke Lifecycle
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant User
+    participant Frontend
+    participant API
+    participant Signer
+    participant Contract as CertificateRegistry
+    participant Chain as Hardhat Node
+
+    User->>Frontend: Enter hash + revocation reason
+    Frontend->>API: POST /api/certificates/revoke
+    API->>API: Validate hash, reason, and issuer
+    API->>Signer: Select issuer account
+    Signer->>Contract: revokeCertificate(hash, reason)
+    Contract->>Contract: Check exists + not already revoked
+    Contract->>Chain: State update mined
+    Contract-->>API: CertificateRevoked event
+    API-->>Frontend: Revoked status, count change, nonce change
+```
+
+What happens:
+1. The user submits a certificate hash and a reason.
+2. The API checks that the selected account is the issuer.
+3. The issuer signs a transaction calling `revokeCertificate`.
+4. The contract checks:
+   - certificate exists
+   - certificate is not already revoked
+   - reason is not empty
+5. The contract keeps the certificate record but sets `revoked=true`.
+6. `revokedAt` is set to the current block timestamp.
+7. `revokedCount` increases by 1.
+8. The issuer nonce increases by 1.
+9. A `CertificateRevoked` event is emitted.
+10. Verification after revocation returns `exists=true`, `valid=false`, `revoked=true`.
+
+Frontend output to point at:
+- **Revoked count before -> after**: proves registry status changed.
+- **Nonce before -> after**: proves the issuer sent a transaction.
+- **Certificate remains stored**: the record was not deleted.
+- **Valid becomes false**: the certificate can no longer be trusted as active.
+- **Event history**: shows the revoke happened after the issue.
+
+### One-Line Teaching Summary
+
+Use this sentence during the demo:
+
+> Issue and revoke are transactions because they change contract storage. Verify is only a read because it checks storage without changing it.
 
 ---
 
