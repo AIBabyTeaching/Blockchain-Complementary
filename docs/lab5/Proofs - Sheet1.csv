@@ -1,0 +1,9 @@
+Parent function,Worker/helper called,Parameters passed,Main result,NODES!?
+proof_of_work(nodes),pow_node(...),"node_id, nodes, data, difficulty, stop, queue",Winning nonce and hash,Best example. Nodes compete in parallel to find the nonce/hash first.
+proof_of_stake(nodes),pos_node(...),"node_id, validators, queue",Stake-selected winner,Nodes do not mine using CPU; they independently agree on the stake-selected validator.
+proof_of_authority(nodes),poa_node(...),"node_id, authorities, selected_validator, queue",Authorized or not,Nodes independently check whether the validator is authorized.
+proof_of_capacity(nodes),poc_node(...),"node_id, capacity, challenge, queue",Best storage score,Nodes independently test storage-slot scores.
+proof_of_history(nodes),make_poh_chain() then poh_node(...),"node_id, hash_chain, queue",Hash chain verification,Nodes verify the same hash chain/order.
+proof_of_importance(nodes),poi_node(...),"node_id, users, queue",Importance winner,Nodes calculate the same importance score and agree on winner.
+proof_of_contribution(nodes),poco_node(...),"node_id, contributions, queue",Best contributor,Nodes calculate the contribution winner.
+proof_of_reputation(nodes),por_node(...),"node_id, reputations, queue",Best reputation,Nodes calculate the reputation winner.
