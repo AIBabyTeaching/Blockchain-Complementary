@@ -1,0 +1,9 @@
+Proof,Full name,Main resource / trust basis,Formula / rule,Meaning in simple words,In your code
+PoW,Proof of Work,CPU computation,H(data + nonce) starts with difficulty zeros,Nodes race to find a valid hash first,block_hash.startswith(difficulty)
+PoS,Proof of Stake,Stake / locked value,Pᵢ = Sᵢ / ΣS,More stake gives higher chance to validate,ticket falls inside validator stake range
+PoA,Proof of Authority,Approved identity,V ∈ A,Validator must be in trusted authority list,selected_validator in authorities
+PoC,Proof of Capacity,Storage capacity,BestScoreᵢ = min H(nodeᵢ + challenge + slot) then winner = argmin(BestScoreᵢ),More storage slots give more chances to find a better/lowest score,loop over range(capacity) and choose lowest best_score
+PoH,Proof of History,Ordered hash chain / time order,"H₀ = H(start), Hₙ = H(Hₙ₋₁ + n)","Each hash depends on the previous one, so order can be verified",current = h(current + str(i))
+PoI,Proof of Importance,Stake + activity,Importanceᵢ = Stakeᵢ + 2 × Transactionsᵢ then winner = argmax(Importanceᵢ),Active nodes with stake become more important,stake + transactions * 2
+PoCo,Proof of Contribution,Useful work / contribution,winner = argmax(Contributionᵢ),Node with highest useful contribution wins,"max(contributions, key=contributions.get)"
+PoR,Proof of Reputation,Trust history / reputation,winner = argmax(Reputationᵢ),Most trusted node wins,"max(reputations, key=reputations.get)"
