@@ -1,7 +1,6 @@
 # pos_node() and proof_of_stake()
 
 import multiprocessing as mp
-
 from common import num, pin_to_core
 
 
@@ -57,11 +56,12 @@ def pos_node(node_id,
     
 def proof_of_stake(nodes):
     """
-    Purpose: Multiples nodes are started so each node can independently agreeo n the same Proof-of-Stake winner.
+    Purpose: Multiples nodes are started so each node can independently agree on the same Proof-of-Stake winner.
     
     Params:
     - Nodes: Number of simulated blockchain nodes.
-    - Meaning: PoS is not a mining race. The winner is selected by stake weight.
+
+    Meaning: PoS is not a mining race. The winner is selected by stake weight.
     """
     
     print("\n=== PROOF OF STAKE ===")

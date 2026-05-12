@@ -5,7 +5,7 @@ import time
 
 from proofs.pos import proof_of_stake
 # from proofs.pow import proof_of_work
-# from proofs.poa import proof_of_autority
+from proofs.poa import proof_of_authority
 # from proofs.poc import proof_of_capacity
 # from proofs.poi import proof_of_importance
 # from proofs.poh import proof_of_history
@@ -23,8 +23,7 @@ if __name__ == "__main__":
     start = time.time() # start timer
     
     # proof_of_work(nodes)
-    # proof_of_stake(nodes)
-    # proof_of_autority(nodes)
+    proof_of_authority(nodes)
     # proof_of_capacity(nodes)
     # proof_of_importance(nodes)
     # proof_of_history(nodes)     
